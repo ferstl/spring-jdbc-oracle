@@ -4,7 +4,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -87,7 +86,7 @@ public class OracleJdbcTemplate extends JdbcTemplate {
 
       // Don't use an int[] array here because instances of InterruptibleBatchPreparedStatementSetter
       // might return Integer.MAX_VALUE as batch size.
-      List<Integer> rowCounts = new LinkedList<>();
+      List<Integer> rowCounts = new ArrayList<>();
 
       if (this.pss instanceof InterruptibleBatchPreparedStatementSetter) {
         InterruptibleBatchPreparedStatementSetter ipss = (InterruptibleBatchPreparedStatementSetter) this.pss;
