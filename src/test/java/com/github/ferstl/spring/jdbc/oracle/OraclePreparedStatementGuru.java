@@ -74,6 +74,7 @@ public class OraclePreparedStatementGuru {
 
     @Override
     public int sendBatch() throws SQLException {
+      // This is more strict than the real implementation but we don't want to call this method if it is not necessary.
       if (this.updateCount == 0) {
         throw new IllegalStateException("Tried to send an empty batch.");
       }
