@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
  * simulates the relevant batch update logic. This is somewhat debug-unfriendly but requires much
  * less code than implementing all the methods of the prepared statement interface.
  */
-public class OraclePreparedStatementGuru {
+public class OracleJdbcGuru {
 
   public static OraclePreparedStatement createOraclePS() {
     OraclePreparedStatement ops = mock(OraclePreparedStatementStub.class);
@@ -60,7 +60,7 @@ public class OraclePreparedStatementGuru {
     return ds;
   }
 
-  private OraclePreparedStatementGuru() {
+  private OracleJdbcGuru() {
     throw new AssertionError("Not instantiable");
   }
 
