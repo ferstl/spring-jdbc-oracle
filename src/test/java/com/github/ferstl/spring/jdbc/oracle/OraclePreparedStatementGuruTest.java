@@ -9,7 +9,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import static com.github.ferstl.spring.jdbc.oracle.OraclePreparedStatementGuru.createOraclePreparedStatement;
+import static com.github.ferstl.spring.jdbc.oracle.OraclePreparedStatementGuru.createOraclePS;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -25,7 +25,7 @@ public class OraclePreparedStatementGuruTest {
 
   @Before
   public void before() {
-    this.ops = createOraclePreparedStatement();
+    this.ops = createOraclePS();
   }
 
 

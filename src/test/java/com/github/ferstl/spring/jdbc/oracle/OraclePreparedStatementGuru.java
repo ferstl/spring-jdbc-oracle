@@ -1,10 +1,17 @@
 package com.github.ferstl.spring.jdbc.oracle;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
+import javax.sql.DataSource;
 
 import oracle.jdbc.OraclePreparedStatement;
 
+import org.mockito.Matchers;
+
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -17,7 +24,7 @@ import static org.mockito.Mockito.when;
  */
 public class OraclePreparedStatementGuru {
 
-  public static OraclePreparedStatement createOraclePreparedStatement() {
+  public static OraclePreparedStatement createOraclePS() {
     OraclePreparedStatement ops = mock(OraclePreparedStatementStub.class);
 
     try {
@@ -30,6 +37,27 @@ public class OraclePreparedStatementGuru {
     }
 
     return ops;
+  }
+
+  public static DataSource createDataSource() {
+    DataSource ds = mock(DataSource.class);
+    Connection connection = mock(Connection.class);
+    PreparedStatement ops = createOraclePS();
+
+    try {
+      when(connection.prepareStatement(anyString())).thenReturn(ops);
+      when(connection.prepareStatement(anyString(), anyInt())).thenReturn(ops);
+      when(connection.prepareStatement(anyString(), Matchers.<int[]>any())).thenReturn(ops);
+      when(connection.prepareStatement(anyString(), Matchers.<String[]>any())).thenReturn(ops);
+      when(connection.prepareStatement(anyString(), anyInt(), anyInt())).thenReturn(ops);
+      when(connection.prepareStatement(anyString(), anyInt(), anyInt(), anyInt())).thenReturn(ops);
+
+      when(ds.getConnection()).thenReturn(connection);
+    } catch (SQLException e) {
+      throw new RuntimeException("Won't happen here.");
+    }
+
+    return ds;
   }
 
   private OraclePreparedStatementGuru() {
