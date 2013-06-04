@@ -1,5 +1,6 @@
 package com.github.ferstl.spring.jdbc.oracle;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import oracle.jdbc.OraclePreparedStatement;
@@ -9,8 +10,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static com.github.ferstl.spring.jdbc.oracle.OracleJdbcGuru.createDataSource;
 import static com.github.ferstl.spring.jdbc.oracle.OracleJdbcGuru.createOraclePS;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Tests for {@link OracleJdbcGuru}.
@@ -80,6 +84,18 @@ public class OracleJdbcGuruTest {
     this.expectedException.expectMessage(": 1");
 
     this.ops.setExecuteBatch(5);
+  }
+
+  @Test
+  public void dataSourcePrepareStatements() throws SQLException {
+    Connection connection = createDataSource().getConnection();
+
+    assertThat(connection.prepareStatement("sql"), instanceOf(OraclePreparedStatement.class));
+    assertThat(connection.prepareStatement("sql", 0), instanceOf(OraclePreparedStatement.class));
+    assertThat(connection.prepareStatement("sql", new int[0]), instanceOf(OraclePreparedStatement.class));
+    assertThat(connection.prepareStatement("sql", new String[0]), instanceOf(OraclePreparedStatement.class));
+    assertThat(connection.prepareStatement("sql", 0, 0), instanceOf(OraclePreparedStatement.class));
+    assertThat(connection.prepareStatement("sql", 0, 0, 0), instanceOf(OraclePreparedStatement.class));
   }
 
 
