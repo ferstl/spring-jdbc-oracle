@@ -24,16 +24,19 @@ public class OracleJdbcTemplate extends JdbcTemplate {
   private final int sendBatchSize;
 
   public OracleJdbcTemplate(int sendBatchSize) {
+    validateSendBatchSize(sendBatchSize);
     this.sendBatchSize = sendBatchSize;
   }
 
   public OracleJdbcTemplate(int sendBatchSize, DataSource dataSource, boolean lazyInit) {
     super(dataSource, lazyInit);
+    validateSendBatchSize(sendBatchSize);
     this.sendBatchSize = sendBatchSize;
   }
 
   public OracleJdbcTemplate(int sendBatchSize, DataSource dataSource) {
     super(dataSource);
+    validateSendBatchSize(sendBatchSize);
     this.sendBatchSize = sendBatchSize;
   }
 
@@ -66,6 +69,12 @@ public class OracleJdbcTemplate extends JdbcTemplate {
       if (ppss instanceof ParameterDisposer) {
         ((ParameterDisposer) ppss).cleanupParameters();
       }
+    }
+  }
+
+  private static void validateSendBatchSize(int sendBatchSize) {
+    if (sendBatchSize < 1) {
+      throw new IllegalArgumentException("Invalid batch size: " + sendBatchSize + ". Must be greater than 0.");
     }
   }
 
