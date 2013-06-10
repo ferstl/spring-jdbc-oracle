@@ -7,8 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 
-import com.github.ferstl.spring.jdbc.oracle.OracleJdbcTemplate.ParameterizedBatchingPreparedStatementCallback;
-
 import oracle.jdbc.OraclePreparedStatement;
 
 import static org.junit.Assert.assertEquals;
@@ -17,7 +15,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
- * JUnit tests for {@link OracleJdbcTemplate.ParameterizedBatchingPreparedStatementCallback}.
+ * JUnit tests for {@link ParameterizedBatchingPreparedStatementCallback}.
  */
 public class ParameterizedBatchingPreparedStatementCallbackTest {
 

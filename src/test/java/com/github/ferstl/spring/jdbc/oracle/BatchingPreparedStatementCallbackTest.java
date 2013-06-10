@@ -9,8 +9,6 @@ import org.mockito.stubbing.Answer;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.InterruptibleBatchPreparedStatementSetter;
 
-import com.github.ferstl.spring.jdbc.oracle.OracleJdbcTemplate.BatchingPreparedStatementCallback;
-
 import oracle.jdbc.OraclePreparedStatement;
 
 import static org.junit.Assert.assertEquals;
