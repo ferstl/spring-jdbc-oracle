@@ -141,7 +141,7 @@ public class OracleJdbcTemplate extends JdbcTemplate {
       }
 
       if (i > 0 && i % this.sendBatchSize != 0) {
-        ops.sendBatch();
+        rowCounts.set(rowCounts.size() - 1, ops.sendBatch());
       }
 
     }
