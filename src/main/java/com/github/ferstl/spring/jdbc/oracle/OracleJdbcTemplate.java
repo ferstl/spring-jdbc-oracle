@@ -5,10 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import javax.sql.DataSource;
-
-import oracle.jdbc.OraclePreparedStatement;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -17,6 +14,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ParameterDisposer;
 import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 import org.springframework.jdbc.core.PreparedStatementCallback;
+
+import oracle.jdbc.OraclePreparedStatement;
 
 
 public class OracleJdbcTemplate extends JdbcTemplate {

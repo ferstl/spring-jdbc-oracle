@@ -2,8 +2,6 @@ package com.github.ferstl.spring.jdbc.oracle;
 
 import java.sql.SQLException;
 
-import oracle.jdbc.OraclePreparedStatement;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -12,6 +10,8 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.InterruptibleBatchPreparedStatementSetter;
 
 import com.github.ferstl.spring.jdbc.oracle.OracleJdbcTemplate.BatchingPreparedStatementCallback;
+
+import oracle.jdbc.OraclePreparedStatement;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyInt;
