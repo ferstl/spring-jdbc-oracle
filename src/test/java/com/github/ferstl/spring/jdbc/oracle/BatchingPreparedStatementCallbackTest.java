@@ -6,11 +6,15 @@ import oracle.jdbc.OraclePreparedStatement;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.InterruptibleBatchPreparedStatementSetter;
 
 import com.github.ferstl.spring.jdbc.oracle.OracleJdbcTemplate.BatchingPreparedStatementCallback;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -29,26 +33,57 @@ public class BatchingPreparedStatementCallbackTest {
   }
 
   @Test
-  public void completeBatches() throws Exception {
-    testDoInPreparedStatement(3, 6);
+  public void completeBatchesWithBpss() throws Exception {
+    doInPreparedStatementWithBpss(3, 6);
   }
 
   @Test
-  public void incompleteBatch() throws Exception {
-    testDoInPreparedStatement(5, 2);
+  public void incompleteBatchWithBpss() throws Exception {
+    doInPreparedStatementWithBpss(5, 2);
   }
 
   @Test
-  public void completeAndIncompleteBatches() throws Exception {
-    testDoInPreparedStatement(3, 8);
+  public void completeAndIncompleteBatchesWithBpss() throws Exception {
+    doInPreparedStatementWithBpss(3, 8);
   }
 
   @Test
-  public void emptyPreparedStatementSetter() throws Exception {
-    testDoInPreparedStatement(3, 0);
+  public void emptyBpss() throws Exception {
+    doInPreparedStatementWithBpss(3, 0);
   }
 
-  private void testDoInPreparedStatement(int sendBatchSize, int pssBatchSize) throws SQLException {
+  @Test
+  public void completeBatchesWithIbpss() throws SQLException {
+    doInPreparedStatementWithIpss(4, 8, Integer.MAX_VALUE);
+  }
+
+  @Test
+  public void incompleteBatchWithIbpss() throws SQLException {
+    doInPreparedStatementWithIpss(4, 1, Integer.MAX_VALUE);
+  }
+
+  @Test
+  public void completeAndIncompleteBatchesWithIbpss() throws SQLException {
+    doInPreparedStatementWithIpss(4, 6, Integer.MAX_VALUE);
+  }
+
+  @Test
+  public void emptyIbpss() throws SQLException {
+    doInPreparedStatementWithIpss(4, 0, Integer.MAX_VALUE);
+  }
+
+  @Test
+  public void ipssSmallBatchSize() throws SQLException {
+    doInPreparedStatementWithIpss(4, 6, 5);
+  }
+
+  @Test
+  public void ipssZeroBatchSize() throws SQLException {
+    doInPreparedStatementWithIpss(4, 6, 0);
+  }
+
+
+  private void doInPreparedStatementWithBpss(int sendBatchSize, int pssBatchSize) throws SQLException {
     BatchPreparedStatementSetter pss = mock(BatchPreparedStatementSetter.class);
     when(pss.getBatchSize()).thenReturn(pssBatchSize);
 
@@ -58,6 +93,27 @@ public class BatchingPreparedStatementCallbackTest {
 
     verifyRowCounts(result, sendBatchSize, pssBatchSize);
     verifyPreparedStatementCalls(pssBatchSize, pss);
+  }
+
+  private void doInPreparedStatementWithIpss(int sendBatchSize, final int effectiveBatchSize, int pssBatchSize)
+  throws SQLException {
+
+    InterruptibleBatchPreparedStatementSetter ipss = mock(InterruptibleBatchPreparedStatementSetter.class);
+    when(ipss.getBatchSize()).thenReturn(pssBatchSize);
+    when(ipss.isBatchExhausted(anyInt())).thenAnswer(new Answer<Boolean>() {
+      @Override
+      public Boolean answer(InvocationOnMock invocation) throws Throwable {
+        return effectiveBatchSize <= (int) invocation.getArguments()[0];
+      }
+    });
+
+    BatchingPreparedStatementCallback psc = new BatchingPreparedStatementCallback(sendBatchSize, ipss);
+
+    int[] result = psc.doInPreparedStatement(this.ops);
+
+    int usedBatchSize = effectiveBatchSize < pssBatchSize ? effectiveBatchSize : pssBatchSize;
+    verifyRowCounts(result, sendBatchSize, usedBatchSize);
+    verifyPreparedStatementCalls(usedBatchSize, ipss);
   }
 
   private void verifyRowCounts(int[] result, int sendBatchSize, int pssBatchSize) {
