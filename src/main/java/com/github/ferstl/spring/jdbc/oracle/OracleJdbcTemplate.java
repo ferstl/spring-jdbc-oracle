@@ -56,7 +56,7 @@ public class OracleJdbcTemplate extends JdbcTemplate {
     }
 
     try {
-    return execute(sql, new ParameterizedBatchingPreparedStatementCallback<>(ppss, batchSize, batchArgs));
+      return execute(sql, new ParameterizedBatchingPreparedStatementCallback<>(ppss, batchSize, batchArgs));
     } finally {
       if (ppss instanceof ParameterDisposer) {
         ((ParameterDisposer) ppss).cleanupParameters();
