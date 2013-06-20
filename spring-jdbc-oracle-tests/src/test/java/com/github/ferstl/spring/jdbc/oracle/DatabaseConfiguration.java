@@ -1,26 +1,50 @@
 package com.github.ferstl.spring.jdbc.oracle;
 
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.apache.tomcat.jdbc.pool.DataSourceFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.jdbc.support.nativejdbc.NativeJdbcExtractor;
 import org.springframework.jdbc.support.nativejdbc.OracleJdbc4NativeJdbcExtractor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
+@PropertySource({
+  "classpath:database.properties",
+  "classpath:database_${user.name}.properties",
+  "connectionpool.properties"})
+@Import({
+  SingleConnectionDataSourceConfiguration.class,
+  TomcatPoolDataSourceConfiguration.class,
+  CommonsDbcpDataSourceConfiguration.class})
 @EnableTransactionManagement
 public class DatabaseConfiguration {
 
+  private static final int NUMBER_OF_ROWS = 10000;
+  private static final String INSERT_SQL = "INSERT INTO test_table(id, val) VALUES(seq_test_table.nextval, ?)";
+
+  @Autowired
+  private DataSource dataSource;
+
   @Bean
   public JdbcTemplate jdbcTemplate() throws Exception {
-    JdbcTemplate jdbcTemplate = new OracleJdbcTemplate(0, dataSource());
+    prepareDatabase(this.dataSource);
+
+    JdbcTemplate jdbcTemplate = new OracleJdbcTemplate(10, this.dataSource);
     jdbcTemplate.setNativeJdbcExtractor(nativeJdbcExtractor());
+    initDatabase(jdbcTemplate);
+
     return jdbcTemplate;
   }
 
@@ -34,20 +58,18 @@ public class DatabaseConfiguration {
     return new OracleJdbc4NativeJdbcExtractor();
   }
 
-  @Bean
-  DataSource dataSource() throws Exception {
-    DataSourceFactory df = new DataSourceFactory();
-    Properties props = new Properties();
-    props.setProperty("url", "jdbc:oracle:thin:@localhost:1521:xe");
-    props.setProperty("defaultAutoCommit", "false");
-    props.setProperty("driverClassName", "oracle.jdbc.OracleDriver");
-    props.setProperty("username", "batch");
-    props.setProperty("password", "batch");
-    props.setProperty("maxActive", "10");
-    props.setProperty("maxIdle", "10");
-    props.setProperty("minIdle", "10");
-    props.setProperty("initialSize", "1");
+  private static void prepareDatabase(DataSource dataSource) {
+    ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+    populator.addScript(new ClassPathResource("prepare-database.sql"));
+    populator.setIgnoreFailedDrops(true);
+    DatabasePopulatorUtils.execute(populator, dataSource);
+  }
 
-    return df.createDataSource(props);
+  private static void initDatabase(JdbcTemplate jdbcTemplate) {
+    List<Object[]> batchArgs = new ArrayList<>(NUMBER_OF_ROWS);
+    for (int i = 0; i < NUMBER_OF_ROWS; i++) {
+      batchArgs.add(new Object[] {String.format("Value_%05d", i + 1)});
+    }
+    jdbcTemplate.batchUpdate(INSERT_SQL, batchArgs);
   }
 }

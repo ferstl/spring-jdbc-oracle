@@ -1,3 +1,5 @@
+.settings/
 .idea/
 target/
 *.iml
+database_*.properties
