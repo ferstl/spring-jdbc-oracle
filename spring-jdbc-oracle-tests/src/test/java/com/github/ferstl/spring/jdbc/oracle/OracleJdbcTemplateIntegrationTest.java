@@ -9,11 +9,13 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionConfiguration;
 
+import com.github.ferstl.spring.jdbc.oracle.dsconfig.DataSourceProfile;
+
 import static org.junit.Assert.assertEquals;
 
-@ActiveProfiles("single-connection")
-//@ActiveProfiles("tomcat-pool")
-//@ActiveProfiles("dbcp-pool")
+@ActiveProfiles(DataSourceProfile.SINGLE_CONNECTION)
+//@ActiveProfiles(DataSourceProfile.COMMONS_DBCP)
+//@ActiveProfiles(DataSourceProfile.TOMCAT_POOL)
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = DatabaseConfiguration.class)
 @TransactionConfiguration
