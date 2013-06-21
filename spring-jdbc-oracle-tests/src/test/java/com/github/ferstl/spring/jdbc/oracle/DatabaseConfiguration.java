@@ -13,11 +13,16 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.jdbc.support.nativejdbc.NativeJdbcExtractor;
 import org.springframework.jdbc.support.nativejdbc.OracleJdbc4NativeJdbcExtractor;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Configuration
 @PropertySource({
@@ -39,7 +44,7 @@ public class DatabaseConfiguration {
 
   @Bean
   public JdbcTemplate jdbcTemplate() throws Exception {
-    prepareDatabase(this.dataSource);
+    prepareDatabase();
 
     JdbcTemplate jdbcTemplate = new OracleJdbcTemplate(10, this.dataSource);
     jdbcTemplate.setNativeJdbcExtractor(nativeJdbcExtractor());
@@ -58,18 +63,39 @@ public class DatabaseConfiguration {
     return new OracleJdbc4NativeJdbcExtractor();
   }
 
-  private static void prepareDatabase(DataSource dataSource) {
-    ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-    populator.addScript(new ClassPathResource("prepare-database.sql"));
-    populator.setIgnoreFailedDrops(true);
-    DatabasePopulatorUtils.execute(populator, dataSource);
+  @Bean
+  PlatformTransactionManager transactionManager() {
+    return new DataSourceTransactionManager(this.dataSource);
   }
 
-  private static void initDatabase(JdbcTemplate jdbcTemplate) {
-    List<Object[]> batchArgs = new ArrayList<>(NUMBER_OF_ROWS);
-    for (int i = 0; i < NUMBER_OF_ROWS; i++) {
-      batchArgs.add(new Object[] {String.format("Value_%05d", i + 1)});
-    }
-    jdbcTemplate.batchUpdate(INSERT_SQL, batchArgs);
+  private void prepareDatabase() {
+    final ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
+    populator.addScript(new ClassPathResource("prepare-database.sql"));
+    populator.setIgnoreFailedDrops(true);
+
+    TransactionTemplate trxTemplate = new TransactionTemplate(transactionManager());
+    trxTemplate.execute(new TransactionCallback<Void>() {
+
+      @Override
+      public Void doInTransaction(TransactionStatus status) {
+        DatabasePopulatorUtils.execute(populator, DatabaseConfiguration.this.dataSource);
+        return null;
+      }
+    });
+  }
+
+  private void initDatabase(final JdbcTemplate jdbcTemplate) {
+    TransactionTemplate trxTemplate = new TransactionTemplate(transactionManager());
+    trxTemplate.execute(new TransactionCallback<int[]>() {
+
+      @Override
+      public int[] doInTransaction(TransactionStatus status) {
+        List<Object[]> batchArgs = new ArrayList<>(NUMBER_OF_ROWS);
+        for (int i = 0; i < NUMBER_OF_ROWS; i++) {
+          batchArgs.add(new Object[] {String.format("Value_%05d", i + 1)});
+        }
+        return jdbcTemplate.batchUpdate(INSERT_SQL, batchArgs);
+      }
+    });
   }
 }
