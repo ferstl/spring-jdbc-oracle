@@ -20,7 +20,6 @@ public class SingleConnectionDataSourceConfiguration {
 
   @Bean
   public DataSource dataSource() throws SQLException {
-    System.out.println(this.env.getProperty("db.username"));
     SingleConnectionDataSource ds = new SingleConnectionDataSource(
         this.env.getProperty("db.url"),
         this.env.getProperty("db.username"),
