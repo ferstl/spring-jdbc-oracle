@@ -1,4 +1,4 @@
-package com.github.ferstl.spring.jdbc.oracle;
+package com.github.ferstl.spring.jdbc.oracle.dsconfig;
 
 import java.util.Properties;
 

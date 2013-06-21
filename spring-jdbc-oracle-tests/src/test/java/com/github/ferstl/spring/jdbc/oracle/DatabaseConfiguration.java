@@ -24,6 +24,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.github.ferstl.spring.jdbc.oracle.dsconfig.CommonsDbcpDataSourceConfiguration;
+import com.github.ferstl.spring.jdbc.oracle.dsconfig.SingleConnectionDataSourceConfiguration;
+import com.github.ferstl.spring.jdbc.oracle.dsconfig.TomcatPoolDataSourceConfiguration;
+
 @Configuration
 @PropertySource({
   "classpath:database.properties",
