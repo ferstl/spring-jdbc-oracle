@@ -24,7 +24,7 @@ public class SingleConnectionDataSourceConfiguration {
         this.env.getProperty("db.url"),
         this.env.getProperty("db.username"),
         this.env.getProperty("db.password"),
-        false);
+        this.env.getProperty("db.defaultAutoCommit", Boolean.class));
 
     ds.setAutoCommit(false);
     return ds;
