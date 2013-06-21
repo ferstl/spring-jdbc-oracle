@@ -37,7 +37,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 public class DatabaseConfiguration {
 
   private static final int NUMBER_OF_ROWS = 10000;
-  private static final String INSERT_SQL = "INSERT INTO test_table(id, val) VALUES(seq_test_table.nextval, ?)";
+  private static final String INSERT_SQL = "INSERT INTO test_table(id, val, numval) VALUES(seq_test_table.nextval, ?, ?)";
 
   @Autowired
   private DataSource dataSource;
@@ -92,7 +92,8 @@ public class DatabaseConfiguration {
       public int[] doInTransaction(TransactionStatus status) {
         List<Object[]> batchArgs = new ArrayList<>(NUMBER_OF_ROWS);
         for (int i = 0; i < NUMBER_OF_ROWS; i++) {
-          batchArgs.add(new Object[] {String.format("Value_%05d", i + 1)});
+          int value = i + 1;
+          batchArgs.add(new Object[] {String.format("Value_%05d", value), value});
         }
         return jdbcTemplate.batchUpdate(INSERT_SQL, batchArgs);
       }
