@@ -1,5 +1,7 @@
 package com.github.ferstl.spring.jdbc.oracle;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -9,7 +11,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.SqlTypeValue;
+import org.springframework.jdbc.core.StatementCreatorUtils;
+import org.springframework.jdbc.core.support.AbstractInterruptibleBatchPreparedStatementSetter;
 import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -33,7 +39,10 @@ import static org.junit.Assert.assertThat;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class OracleJdbcTemplateIntegrationTest {
 
+  /** SQL that updates one single row. */
   private static final String SINGLE_ROW_SQL = "UPDATE test_table t SET t.numval = ? WHERE t.numval = ?";
+
+  /** SQL that updates multiple rows. */
   private static final String MULTI_ROW_SQL = "UPDATE test_table t SET t.numval = ? WHERE t.numval BETWEEN ? AND ?";
 
   @Autowired
@@ -47,12 +56,6 @@ public class OracleJdbcTemplateIntegrationTest {
   @Before
   public void before() {
     this.batchSize = this.env.getProperty("db.batchsize", Integer.class);
-  }
-
-  @Test
-  public void test() {
-    int nrOf = this.jdbcTemplate.queryForObject("SELECT count(val) FROM test_table", Integer.class);
-    assertEquals(10000, nrOf);
   }
 
   @Test
@@ -82,11 +85,137 @@ public class OracleJdbcTemplateIntegrationTest {
   }
 
   @Test
-  public void updateMultipleRowsWithArgList() {
+  public void noUpdateWithArgList() {
+    int nrOfUpdates = this.batchSize * 2 + 2;
+
+    List<Object[]> batchArgs = new ArrayList<>(nrOfUpdates);
+    for (int i = 0; i < nrOfUpdates; i++) {
+      batchArgs.add(new Object[] { i + 1, Integer.MAX_VALUE });
+    }
+
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs);
+
+    assertEquals(nrOfUpdates, result.length);
+    for (int updateCount : result) {
+      assertEquals(0, updateCount);
+    }
+  }
+
+  @Test
+  public void updateWithEmptyArgList() {
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, Collections.<Object[]>emptyList());
+
+    assertEquals(0, result.length);
+  }
+
+  @Test
+  public void updateMultipleRowsWithSingleArgList() {
     Object[] args = new Object[] {9999, 100, 199};
     int[] result = this.jdbcTemplate.batchUpdate(MULTI_ROW_SQL, Collections.singletonList(args));
 
     assertEquals(1, result.length);
     assertEquals(100, result[0]);
+  }
+
+  @Test
+  public void updateCompleteBatchWithPss() {
+    int nrOfUpdates = this.batchSize * 2;
+
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new SingleRowPreparedStatementSetter(nrOfUpdates));
+
+    assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
+  }
+
+  @Test
+  public void updateIncompleteBatchWithPss() {
+    int nrOfUpdates = this.batchSize + 2;
+
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new SingleRowPreparedStatementSetter(nrOfUpdates));
+
+    assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
+  }
+
+  @Test
+  public void updateWithEmptyPss() {
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new SingleRowPreparedStatementSetter(0));
+
+    assertEquals(0, result.length);
+  }
+
+  @Test
+  public void updateCompleteBatchWithInterruptiblePss() {
+    int nrOfUpdates = this.batchSize * 2;
+
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new SingleRowInterruptiblePreparedStatementSetter(nrOfUpdates));
+
+    assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
+  }
+
+  @Test
+  public void updateIncompleteBatchWithInterruptiblePss() {
+    int nrOfUpdates = this.batchSize + 2;
+
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new SingleRowInterruptiblePreparedStatementSetter(nrOfUpdates));
+
+    assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
+  }
+
+  @Test
+  public void updateWithEmptyInterruptiblePss() {
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new SingleRowInterruptiblePreparedStatementSetter(0));
+
+    assertEquals(0, result.length);
+  }
+
+  static class SingleRowPreparedStatementSetter implements BatchPreparedStatementSetter {
+
+    private final int[] parameters;
+
+    public SingleRowPreparedStatementSetter(int numberOfRows) {
+      this.parameters = new int[numberOfRows];
+
+      for (int i = 0; i < numberOfRows; i++) {
+        this.parameters[i] = i + 1;
+      }
+    }
+
+    @Override
+    public void setValues(PreparedStatement ps, int i) throws SQLException {
+      StatementCreatorUtils.setParameterValue(ps, 1, SqlTypeValue.TYPE_UNKNOWN, 42);
+      StatementCreatorUtils.setParameterValue(ps, 2, SqlTypeValue.TYPE_UNKNOWN, this.parameters[i]);
+    }
+
+    @Override
+    public int getBatchSize() {
+      return this.parameters.length;
+    }
+
+  }
+
+  static class SingleRowInterruptiblePreparedStatementSetter extends AbstractInterruptibleBatchPreparedStatementSetter {
+
+    private final int[] parameters;
+
+    public SingleRowInterruptiblePreparedStatementSetter(int numberOfRows) {
+      this.parameters = new int[numberOfRows];
+
+      for (int i = 0; i < numberOfRows; i++) {
+        this.parameters[i] = i + 1;
+      }
+    }
+
+    @Override
+    protected boolean setValuesIfAvailable(PreparedStatement ps, int i) throws SQLException {
+      if (i >= this.parameters.length) {
+        return false;
+      }
+
+      StatementCreatorUtils.setParameterValue(ps, 1, SqlTypeValue.TYPE_UNKNOWN, 42);
+      StatementCreatorUtils.setParameterValue(ps, 2, SqlTypeValue.TYPE_UNKNOWN, this.parameters[i]);
+
+      return true;
+    }
+
+
   }
 }
