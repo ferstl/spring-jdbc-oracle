@@ -15,9 +15,6 @@ import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.core.StatementCreatorUtils;
 import org.springframework.jdbc.core.support.AbstractInterruptibleBatchPreparedStatementSetter;
-import org.springframework.test.context.ActiveProfiles;
-
-import com.github.ferstl.spring.jdbc.oracle.dsconfig.DataSourceProfile;
 
 import static org.junit.Assert.assertEquals;
 
@@ -25,10 +22,7 @@ import static org.junit.Assert.assertEquals;
  * This test compares the size of the result arrays of the {@link OracleJdbcTemplate} the the result arrays of the
  * Spring's classic {@link JdbcTemplate}.
  */
-@ActiveProfiles(DataSourceProfile.SINGLE_CONNECTION)
-//@ActiveProfiles(DataSourceProfile.COMMONS_DBCP)
-//@ActiveProfiles(DataSourceProfile.TOMCAT_POOL)
-public class AbstractComparisonIntegrationTest extends AbstractOracleJdbcTemplateIntegrationTest {
+public abstract class AbstractComparisonIntegrationTest extends AbstractOracleJdbcTemplateIntegrationTest {
 
   private static final String INSERT_SQL = "INSERT INTO test_table(id, val, numval) VALUES (seq_test_table.nextval, ?, ?)";
 

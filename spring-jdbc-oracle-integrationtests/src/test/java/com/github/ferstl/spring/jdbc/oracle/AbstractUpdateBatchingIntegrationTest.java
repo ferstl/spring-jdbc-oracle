@@ -20,19 +20,13 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.test.context.ActiveProfiles;
-
-import com.github.ferstl.spring.jdbc.oracle.dsconfig.DataSourceProfile;
 
 import static com.github.ferstl.spring.jdbc.oracle.RowCountMatcher.matchesRowCounts;
 import static com.github.ferstl.spring.jdbc.oracle.RowCountPerBatchMatcher.matchesBatchedRowCounts;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
-@ActiveProfiles(DataSourceProfile.SINGLE_CONNECTION)
-//@ActiveProfiles(DataSourceProfile.COMMONS_DBCP)
-//@ActiveProfiles(DataSourceProfile.TOMCAT_POOL)
-public class AbstractUpdateBatchingIntegrationTest extends AbstractOracleJdbcTemplateIntegrationTest {
+public abstract class AbstractUpdateBatchingIntegrationTest extends AbstractOracleJdbcTemplateIntegrationTest {
 
   /** SQL that updates one single row. */
   private static final String SINGLE_ROW_SQL = "UPDATE test_table t SET t.numval = ? WHERE t.numval = ?";
