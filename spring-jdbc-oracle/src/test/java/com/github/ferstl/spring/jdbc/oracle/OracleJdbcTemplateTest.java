@@ -42,19 +42,19 @@ public class OracleJdbcTemplateTest {
 
   @Test
   public void constructorInvalidBatchSize1() {
-    expectedException.expect(IllegalArgumentException.class);
+    this.expectedException.expect(IllegalArgumentException.class);
     new OracleJdbcTemplate(0);
   }
 
   @Test
   public void constructorInvalidBatchSize2() {
-    expectedException.expect(IllegalArgumentException.class);
+    this.expectedException.expect(IllegalArgumentException.class);
     new OracleJdbcTemplate(-1, OracleJdbcGuru.createDataSource());
   }
 
   @Test
   public void constructorInvalidBatchSize3() {
-    expectedException.expect(IllegalArgumentException.class);
+    this.expectedException.expect(IllegalArgumentException.class);
     new OracleJdbcTemplate(0, OracleJdbcGuru.createDataSource(), true);
   }
 
@@ -131,7 +131,7 @@ public class OracleJdbcTemplateTest {
     @Override
     public void setValues(PreparedStatement ps, int i) throws SQLException {
       int val = this.array[i];
-      StatementCreatorUtils.setParameterValue(ps, 0, SqlTypeValue.TYPE_UNKNOWN, val);
+      StatementCreatorUtils.setParameterValue(ps, 1, SqlTypeValue.TYPE_UNKNOWN, val);
     }
 
     @Override
