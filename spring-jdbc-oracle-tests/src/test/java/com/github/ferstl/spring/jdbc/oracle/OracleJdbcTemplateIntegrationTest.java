@@ -6,16 +6,10 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.DataSourceProfile;
 
@@ -27,12 +21,7 @@ import static org.junit.Assert.assertThat;
 @ActiveProfiles(DataSourceProfile.SINGLE_CONNECTION)
 //@ActiveProfiles(DataSourceProfile.COMMONS_DBCP)
 //@ActiveProfiles(DataSourceProfile.TOMCAT_POOL)
-@ContextConfiguration(classes = DatabaseConfiguration.class)
-@TransactionConfiguration
-@Transactional
-@IfProfileValue(name = "testgroup", value="integration")
-@RunWith(SpringJUnit4ClassRunner.class)
-public class OracleJdbcTemplateIntegrationTest {
+public class OracleJdbcTemplateIntegrationTest extends AbstractOracleJdbcTemplateIntegrationTest {
 
   /** SQL that updates one single row. */
   private static final String SINGLE_ROW_SQL = "UPDATE test_table t SET t.numval = ? WHERE t.numval = ?";
