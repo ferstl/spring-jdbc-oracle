@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.core.StatementCreatorUtils;
 
-class SingleRowParameterizedPreparedStatementSetter implements ParameterizedPreparedStatementSetter<int[]> {
+class TestParameterizedPreparedStatementSetter implements ParameterizedPreparedStatementSetter<int[]> {
 
   @Override
   public void setValues(PreparedStatement ps, int[] argument) throws SQLException {

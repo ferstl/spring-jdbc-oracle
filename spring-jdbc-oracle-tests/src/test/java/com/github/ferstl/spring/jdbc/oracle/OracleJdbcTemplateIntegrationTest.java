@@ -115,7 +115,7 @@ public class OracleJdbcTemplateIntegrationTest {
   public void updateCompleteBatchWithPss() {
     int nrOfUpdates = this.batchSize * 2;
 
-    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new SingleRowPreparedStatementSetter(nrOfUpdates));
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new TestBatchPreparedStatementSetter(nrOfUpdates));
 
     assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
   }
@@ -124,14 +124,14 @@ public class OracleJdbcTemplateIntegrationTest {
   public void updateIncompleteBatchWithPss() {
     int nrOfUpdates = this.batchSize + 2;
 
-    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new SingleRowPreparedStatementSetter(nrOfUpdates));
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new TestBatchPreparedStatementSetter(nrOfUpdates));
 
     assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
   }
 
   @Test
   public void updateWithEmptyPss() {
-    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new SingleRowPreparedStatementSetter(0));
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new TestBatchPreparedStatementSetter(0));
 
     assertEquals(0, result.length);
   }
@@ -140,7 +140,7 @@ public class OracleJdbcTemplateIntegrationTest {
   public void updateCompleteBatchWithInterruptiblePss() {
     int nrOfUpdates = this.batchSize * 2;
 
-    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new SingleRowInterruptiblePreparedStatementSetter(nrOfUpdates));
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new TestInterruptiblePreparedStatementSetter(nrOfUpdates));
 
     assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
   }
@@ -149,14 +149,14 @@ public class OracleJdbcTemplateIntegrationTest {
   public void updateIncompleteBatchWithInterruptiblePss() {
     int nrOfUpdates = this.batchSize + 2;
 
-    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new SingleRowInterruptiblePreparedStatementSetter(nrOfUpdates));
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new TestInterruptiblePreparedStatementSetter(nrOfUpdates));
 
     assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
   }
 
   @Test
   public void updateWithEmptyInterruptiblePss() {
-    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new SingleRowInterruptiblePreparedStatementSetter(0));
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new TestInterruptiblePreparedStatementSetter(0));
 
     assertEquals(0, result.length);
   }
@@ -170,7 +170,7 @@ public class OracleJdbcTemplateIntegrationTest {
       batchArgs.add(new int[] { i + 1, i + 11 });
     }
 
-    int[][] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs, customBatchSize, new SingleRowParameterizedPreparedStatementSetter());
+    int[][] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs, customBatchSize, new TestParameterizedPreparedStatementSetter());
 
     assertThat(result, RowCountPerBatchMatcher.matchesBatchedRowCounts(customBatchSize, nrOfUpdates));
   }
@@ -184,7 +184,7 @@ public class OracleJdbcTemplateIntegrationTest {
       batchArgs.add(new int[] { i + 1, i + 11 });
     }
 
-    int[][] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs, customBatchSize, new SingleRowParameterizedPreparedStatementSetter());
+    int[][] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs, customBatchSize, new TestParameterizedPreparedStatementSetter());
 
     assertThat(result, RowCountPerBatchMatcher.matchesBatchedRowCounts(customBatchSize, nrOfUpdates));
   }
@@ -194,7 +194,7 @@ public class OracleJdbcTemplateIntegrationTest {
     int customBatchSize = 5;
 
     int[][] result = this.jdbcTemplate.batchUpdate(
-        SINGLE_ROW_SQL, Collections.<int[]>emptyList(), customBatchSize, new SingleRowParameterizedPreparedStatementSetter());
+        SINGLE_ROW_SQL, Collections.<int[]>emptyList(), customBatchSize, new TestParameterizedPreparedStatementSetter());
 
     assertThat(result, RowCountPerBatchMatcher.matchesBatchedRowCounts(customBatchSize, 0));
   }
