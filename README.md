@@ -23,11 +23,9 @@ So only methods (2) and (5) need to be re-implemented for Oracle Update Batching
 
 ### TODOs / Ideas
 * A lot of tests against an Oracle DB (Oracle XE is fine)
-  * Correct batch size
-  * Tests with pooled `DataSource`s (tomcat-jdbc, commons-dbcp)
+  * ~~Correct batch size~~
+  * ~~Tests with pooled `DataSource`s (tomcat-jdbc, commons-dbcp)~~
   * Tests with `NamedParameterJdbcTemplate`
-* Eliminate OJDBC dependency from the POM
-  * Separate Maven module for Oracle tests
-  * Call Oracle-specific methods using reflection (Java 6) or `MethodHandle`s (Java 7)
-    * Alternatively, create a oracle.jdbc package which contains all interfaces and methods used by this implementation. Exclude the package from the created JAR file.
+* ~~Eliminate OJDBC dependency from the POM~~
+    * ~~Create a oracle.jdbc package which contains all interfaces and methods used by this implementation. Exclude the package from the created JAR file.~~
 * Supplementary methods that return `int` (sum of all affected rows in a batch update) instead of `int[]`
