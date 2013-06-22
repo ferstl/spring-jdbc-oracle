@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.DataSourceProfile;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 @ActiveProfiles(DataSourceProfile.SINGLE_CONNECTION)
 //@ActiveProfiles(DataSourceProfile.COMMONS_DBCP)
@@ -63,7 +64,7 @@ public class OracleJdbcTemplateIntegrationTest {
 
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs);
 
-    verifyRowCounts(result, this.batchSize, nrOfUpdates);
+    assertThat(result, RowCountMatcher.matchesRowCounts(this.batchSize, nrOfUpdates));
   }
 
   @Test
@@ -76,7 +77,7 @@ public class OracleJdbcTemplateIntegrationTest {
 
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs);
 
-    verifyRowCounts(result, this.batchSize, nrOfUpdates);
+    assertThat(result, RowCountMatcher.matchesRowCounts(this.batchSize, nrOfUpdates));
   }
 
   @Test
@@ -86,32 +87,5 @@ public class OracleJdbcTemplateIntegrationTest {
 
     assertEquals(1, result.length);
     assertEquals(100, result[0]);
-  }
-
-  private void verifyRowCounts(int[] result, int sendBatchSize, int pssBatchSize) {
-    // Check the number of row counts
-    assertEquals("Wrong number of executed statements", pssBatchSize, result.length);
-
-    // Check for correct execution of complete batches
-    int sizeOfCompleteBatches = (pssBatchSize / sendBatchSize) * sendBatchSize;
-    for (int i = 1; i <= sizeOfCompleteBatches; i++) {
-      if (i % sendBatchSize != 0) {
-        assertEquals("An unexpected update occurred in a complete batch. Position: " + (i - 1), 0, result[i - 1]);
-      } else {
-        assertEquals("Wrong row count at the end of a complete batch", sendBatchSize, result[i - 1]);
-      }
-    }
-
-    // Check for correct execution of a possibly last incomplete batch.
-    int sizeOfLastBatch = pssBatchSize % sendBatchSize;
-    if (sizeOfLastBatch != 0) {
-      for (int i = sizeOfCompleteBatches + 1; i < sizeOfCompleteBatches + sizeOfLastBatch; i++) {
-        if (i % sendBatchSize != 0) {
-          assertEquals("An unexpected update occurred in the last batch. Position: " + (i - 1), 0, result[i - 1]);
-        }
-      }
-
-      assertEquals("Wrong row count at the end of the last batch.", sizeOfLastBatch, result[result.length -1]);
-    }
   }
 }
