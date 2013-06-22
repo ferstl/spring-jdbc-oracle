@@ -77,6 +77,14 @@ public class DatabaseConfiguration {
   }
 
   @Bean
+  public JdbcTemplate classicJdbcTemplate() {
+    JdbcTemplate jdbcTemplate = new JdbcTemplate(this.dataSource);
+    jdbcTemplate.setNativeJdbcExtractor(nativeJdbcExtractor());
+
+    return jdbcTemplate;
+  }
+
+  @Bean
   public NamedParameterJdbcTemplate namedParameterJdbcTemplate() throws Exception {
     return new NamedParameterJdbcTemplate(jdbcTemplate());
   }
