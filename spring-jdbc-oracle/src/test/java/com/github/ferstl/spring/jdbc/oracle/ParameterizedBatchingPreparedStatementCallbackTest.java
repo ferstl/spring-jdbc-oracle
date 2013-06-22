@@ -9,7 +9,8 @@ import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 
 import oracle.jdbc.OraclePreparedStatement;
 
-import static org.junit.Assert.assertEquals;
+import static com.github.ferstl.spring.jdbc.oracle.RowCountPerBatchMatcher.matchesBatchedRowCounts;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -60,51 +61,10 @@ public class ParameterizedBatchingPreparedStatementCallbackTest {
         new ParameterizedBatchingPreparedStatementCallback<>(ppss, batchSize, batchArgs);
     int[][] result = psc.doInPreparedStatement(this.ops);
 
-    verifyRowCounts(result, batchSize, batchArgSize);
+    assertThat(result, matchesBatchedRowCounts(batchSize, batchArgSize));
     verifyPreparedStatementCalls(batchArgSize, ppss);
   }
 
-  private void verifyRowCounts(int[][] result, int batchSize, int batchArgSize) {
-    // Calculate the expected size of the last batch.
-    int sizeOfLastBatch = batchArgSize % batchSize;
-    if (sizeOfLastBatch == 0) {
-      sizeOfLastBatch = batchSize;
-    }
-
-    // Calculate the expected number of batches.
-    int numberOfBatches = batchArgSize / batchSize;
-    if (sizeOfLastBatch != batchSize) {
-      numberOfBatches += 1;
-    }
-
-    assertEquals("Wrong number of batches", numberOfBatches, result.length);
-
-    // Verify the complete batches
-    for (int i = 0; i < result.length - 1; i++) {
-      assertEquals("Wrong size of batch " + i, batchSize, result[i].length);
-
-      verifyRowCountsInBatch(result[i], batchSize);
-    }
-
-    // Verify the last batch
-    if (result.length > 1) {
-      int[] lastBatch = result[result.length - 1];
-      assertEquals("Wrong size of the last batch", sizeOfLastBatch, lastBatch.length);
-
-      verifyRowCountsInBatch(lastBatch, sizeOfLastBatch);
-    }
-  }
-
-  private void verifyRowCountsInBatch(int[] rowCounts, int batchSize) {
-    for (int j = 0; j < rowCounts.length; j++) {
-      // Only the last number is expected to be non-zero
-      if (j != rowCounts.length - 1) {
-        assertEquals("An unexpected update occurred in the batch. Position: " + j, 0, rowCounts[j]);
-      } else {
-        assertEquals("Wrong row count at the end of the batch", batchSize, rowCounts[j]);
-      }
-    }
-  }
 
   private void verifyPreparedStatementCalls(int batchArgSize, ParameterizedPreparedStatementSetter<String> ppss)
   throws SQLException {
