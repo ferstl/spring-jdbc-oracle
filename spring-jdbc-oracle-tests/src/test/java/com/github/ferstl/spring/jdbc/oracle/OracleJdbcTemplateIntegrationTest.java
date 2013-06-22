@@ -1,7 +1,5 @@
 package com.github.ferstl.spring.jdbc.oracle;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,12 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
-import org.springframework.jdbc.core.SqlTypeValue;
-import org.springframework.jdbc.core.StatementCreatorUtils;
-import org.springframework.jdbc.core.support.AbstractInterruptibleBatchPreparedStatementSetter;
 import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
@@ -204,68 +197,5 @@ public class OracleJdbcTemplateIntegrationTest {
         SINGLE_ROW_SQL, Collections.<int[]>emptyList(), customBatchSize, new SingleRowParameterizedPreparedStatementSetter());
 
     assertThat(result, RowCountPerBatchMatcher.matchesBatchedRowCounts(customBatchSize, 0));
-  }
-
-
-
-  static class SingleRowPreparedStatementSetter implements BatchPreparedStatementSetter {
-
-    private final int[] parameters;
-
-    public SingleRowPreparedStatementSetter(int numberOfRows) {
-      this.parameters = new int[numberOfRows];
-
-      for (int i = 0; i < numberOfRows; i++) {
-        this.parameters[i] = i + 1;
-      }
-    }
-
-    @Override
-    public void setValues(PreparedStatement ps, int i) throws SQLException {
-      StatementCreatorUtils.setParameterValue(ps, 1, SqlTypeValue.TYPE_UNKNOWN, 42);
-      StatementCreatorUtils.setParameterValue(ps, 2, SqlTypeValue.TYPE_UNKNOWN, this.parameters[i]);
-    }
-
-    @Override
-    public int getBatchSize() {
-      return this.parameters.length;
-    }
-
-  }
-
-  static class SingleRowInterruptiblePreparedStatementSetter extends AbstractInterruptibleBatchPreparedStatementSetter {
-
-    private final int[] parameters;
-
-    public SingleRowInterruptiblePreparedStatementSetter(int numberOfRows) {
-      this.parameters = new int[numberOfRows];
-
-      for (int i = 0; i < numberOfRows; i++) {
-        this.parameters[i] = i + 1;
-      }
-    }
-
-    @Override
-    protected boolean setValuesIfAvailable(PreparedStatement ps, int i) throws SQLException {
-      if (i >= this.parameters.length) {
-        return false;
-      }
-
-      StatementCreatorUtils.setParameterValue(ps, 1, SqlTypeValue.TYPE_UNKNOWN, 42);
-      StatementCreatorUtils.setParameterValue(ps, 2, SqlTypeValue.TYPE_UNKNOWN, this.parameters[i]);
-
-      return true;
-    }
-  }
-
-  static class SingleRowParameterizedPreparedStatementSetter implements ParameterizedPreparedStatementSetter<int[]> {
-
-    @Override
-    public void setValues(PreparedStatement ps, int[] argument) throws SQLException {
-      for (int i = 0; i < argument.length; i++) {
-        StatementCreatorUtils.setParameterValue(ps, i + 1, SqlTypeValue.TYPE_UNKNOWN, argument[i]);
-      }
-    }
-
   }
 }
