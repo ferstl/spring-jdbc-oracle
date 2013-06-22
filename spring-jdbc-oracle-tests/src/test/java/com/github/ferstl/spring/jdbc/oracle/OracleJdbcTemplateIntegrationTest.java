@@ -40,6 +40,9 @@ public class OracleJdbcTemplateIntegrationTest {
   /** SQL that updates multiple rows. */
   private static final String MULTI_ROW_SQL = "UPDATE test_table t SET t.numval = ? WHERE t.numval BETWEEN ? AND ?";
 
+  /** SQL that verifies the result of {@link #SINGLE_ROW_SQL}. */
+  private static final String SINGLE_ROW_VERIFY_SQL = "SELECT count(numval) FROM test_table t WHERE t.numval = ?";
+
   @Autowired
   private JdbcTemplate jdbcTemplate;
 
@@ -59,6 +62,7 @@ public class OracleJdbcTemplateIntegrationTest {
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, createBatchArgs(nrOfUpdates));
 
     assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
+    verifyUpdates(nrOfUpdates);
   }
 
   @Test
@@ -67,6 +71,7 @@ public class OracleJdbcTemplateIntegrationTest {
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, createBatchArgs(nrOfUpdates));
 
     assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
+    verifyUpdates(nrOfUpdates);
   }
 
   @Test
@@ -82,6 +87,7 @@ public class OracleJdbcTemplateIntegrationTest {
     for (int updateCount : result) {
       assertEquals(0, updateCount);
     }
+    verifyUpdates(0);
   }
 
   @Test
@@ -89,15 +95,17 @@ public class OracleJdbcTemplateIntegrationTest {
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, Collections.<Object[]>emptyList());
 
     assertEquals(0, result.length);
+    verifyUpdates(0);
   }
 
   @Test
   public void updateMultipleRowsWithSingleArgList() {
-    Object[] args = new Object[] {9999, 100, 199};
+    Object[] args = new Object[] {Integer.MAX_VALUE, 100, 199};
     int[] result = this.jdbcTemplate.batchUpdate(MULTI_ROW_SQL, Collections.singletonList(args));
 
     assertEquals(1, result.length);
     assertEquals(100, result[0]);
+    verifyUpdates(100);
   }
 
   @Test
@@ -107,6 +115,7 @@ public class OracleJdbcTemplateIntegrationTest {
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new TestBatchPreparedStatementSetter(nrOfUpdates));
 
     assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
+    verifyUpdates(nrOfUpdates);
   }
 
   @Test
@@ -116,6 +125,7 @@ public class OracleJdbcTemplateIntegrationTest {
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new TestBatchPreparedStatementSetter(nrOfUpdates));
 
     assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
+    verifyUpdates(nrOfUpdates);
   }
 
   @Test
@@ -123,6 +133,7 @@ public class OracleJdbcTemplateIntegrationTest {
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new TestBatchPreparedStatementSetter(0));
 
     assertEquals(0, result.length);
+    verifyUpdates(0);
   }
 
   @Test
@@ -132,6 +143,7 @@ public class OracleJdbcTemplateIntegrationTest {
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new TestInterruptiblePreparedStatementSetter(nrOfUpdates));
 
     assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
+    verifyUpdates(nrOfUpdates);
   }
 
   @Test
@@ -141,6 +153,7 @@ public class OracleJdbcTemplateIntegrationTest {
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new TestInterruptiblePreparedStatementSetter(nrOfUpdates));
 
     assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
+    verifyUpdates(nrOfUpdates);
   }
 
   @Test
@@ -148,6 +161,7 @@ public class OracleJdbcTemplateIntegrationTest {
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new TestInterruptiblePreparedStatementSetter(0));
 
     assertEquals(0, result.length);
+    verifyUpdates(0);
   }
 
   @Test
@@ -158,6 +172,7 @@ public class OracleJdbcTemplateIntegrationTest {
         SINGLE_ROW_SQL, createIntBatchArgs(nrOfUpdates), customBatchSize, new TestParameterizedPreparedStatementSetter());
 
     assertThat(result, matchesBatchedRowCounts(customBatchSize, nrOfUpdates));
+    verifyUpdates(nrOfUpdates);
   }
 
   @Test
@@ -168,6 +183,7 @@ public class OracleJdbcTemplateIntegrationTest {
         SINGLE_ROW_SQL, createIntBatchArgs(nrOfUpdates), customBatchSize, new TestParameterizedPreparedStatementSetter());
 
     assertThat(result, matchesBatchedRowCounts(customBatchSize, nrOfUpdates));
+    verifyUpdates(nrOfUpdates);
   }
 
   @Test
@@ -178,6 +194,11 @@ public class OracleJdbcTemplateIntegrationTest {
         SINGLE_ROW_SQL, Collections.<int[]>emptyList(), customBatchSize, new TestParameterizedPreparedStatementSetter());
 
     assertThat(result, matchesBatchedRowCounts(customBatchSize, 0));
+    verifyUpdates(0);
+  }
+
+  private void verifyUpdates(int nrOfUpdates) {
+    assertEquals((Integer) nrOfUpdates, this.jdbcTemplate.queryForObject(SINGLE_ROW_VERIFY_SQL, Integer.class, Integer.MAX_VALUE));
   }
 
   private static List<Object[]> createBatchArgs(int nrOfUpdates) {
@@ -191,7 +212,7 @@ public class OracleJdbcTemplateIntegrationTest {
   private static List<int[]> createIntBatchArgs(int nrOfUpdates) {
     List<int[]> batchArgs = new ArrayList<>(nrOfUpdates);
     for (int i = 0; i < nrOfUpdates; i++) {
-      batchArgs.add(new int[] { i + 1, i + 11 });
+      batchArgs.add(new int[] { Integer.MAX_VALUE, i + 11 });
     }
     return batchArgs;
   }
