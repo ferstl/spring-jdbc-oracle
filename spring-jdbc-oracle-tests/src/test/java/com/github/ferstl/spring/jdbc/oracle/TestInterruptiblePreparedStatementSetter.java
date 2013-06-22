@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.core.StatementCreatorUtils;
 import org.springframework.jdbc.core.support.AbstractInterruptibleBatchPreparedStatementSetter;
 
-class TestInterruptiblePreparedStatementSetter extends AbstractInterruptibleBatchPreparedStatementSetter {
+public class TestInterruptiblePreparedStatementSetter extends AbstractInterruptibleBatchPreparedStatementSetter {
 
   private final int[] parameters;
 

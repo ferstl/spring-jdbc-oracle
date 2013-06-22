@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.core.StatementCreatorUtils;
 
-class TestBatchPreparedStatementSetter implements BatchPreparedStatementSetter {
+public class TestBatchPreparedStatementSetter implements BatchPreparedStatementSetter {
 
   private final int[] parameters;
 
