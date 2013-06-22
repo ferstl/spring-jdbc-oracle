@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -46,11 +47,14 @@ public class DatabaseConfiguration {
   @Autowired
   private DataSource dataSource;
 
+  @Autowired
+  private Environment env;
+
   @Bean
   public JdbcTemplate jdbcTemplate() throws Exception {
     prepareDatabase();
 
-    JdbcTemplate jdbcTemplate = new OracleJdbcTemplate(10, this.dataSource);
+    JdbcTemplate jdbcTemplate = new OracleJdbcTemplate(this.env.getProperty("db.batchsize", Integer.class), this.dataSource);
     jdbcTemplate.setNativeJdbcExtractor(nativeJdbcExtractor());
     initDatabase(jdbcTemplate);
 
