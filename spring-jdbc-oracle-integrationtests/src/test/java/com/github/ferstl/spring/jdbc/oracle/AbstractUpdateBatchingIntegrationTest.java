@@ -153,7 +153,7 @@ public class AbstractUpdateBatchingIntegrationTest extends AbstractOracleJdbcTem
 
   @Test
   public void updateCompleteBatchWithParameterizedPss() {
-    int customBatchSize = 5;
+    int customBatchSize = this.batchSize - 3;
     int nrOfUpdates = 2 * customBatchSize;
     int[][] result = this.jdbcTemplate.batchUpdate(
         SINGLE_ROW_SQL, createIntBatchArgs(nrOfUpdates), customBatchSize, new TestParameterizedPreparedStatementSetter());
@@ -164,7 +164,7 @@ public class AbstractUpdateBatchingIntegrationTest extends AbstractOracleJdbcTem
 
   @Test
   public void updateInompleteBatchWithParameterizedPss() {
-    int customBatchSize = 5;
+    int customBatchSize = this.batchSize - 3;
     int nrOfUpdates = customBatchSize + 2;
     int[][] result = this.jdbcTemplate.batchUpdate(
         SINGLE_ROW_SQL, createIntBatchArgs(nrOfUpdates), customBatchSize, new TestParameterizedPreparedStatementSetter());
@@ -175,7 +175,7 @@ public class AbstractUpdateBatchingIntegrationTest extends AbstractOracleJdbcTem
 
   @Test
   public void updateInompleteBatchWithParameterizedPssEmptyArgList() {
-    int customBatchSize = 5;
+    int customBatchSize = this.batchSize - 3;
 
     int[][] result = this.jdbcTemplate.batchUpdate(
         SINGLE_ROW_SQL, Collections.<int[]>emptyList(), customBatchSize, new TestParameterizedPreparedStatementSetter());
