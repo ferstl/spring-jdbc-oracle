@@ -9,6 +9,10 @@
   </parent>
 
   <artifactId>spring-jdbc-oracle-tests</artifactId>
+  
+  <properties>
+    <main.basedir>${project.parent.basedir}</main.basedir>
+  </properties>
 
   <dependencies>
     <dependency>

@@ -7,6 +7,20 @@
   <packaging>pom</packaging>
   <version>1.0.0-SNAPSHOT</version>
 
+  <description>
+    A variant of Spring's JdbcTemplate that uses Oracle Update Batching. 
+  </description>
+  
+  <url>https://github.com/ferstl/spring-jdbc-oracle</url>
+  
+  <licenses>
+    <license>
+      <name>Apache 2</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
   <developers>
     <developer>
       <id>ferstl</id>
@@ -15,18 +29,37 @@
       <url>https://github.com/ferstl</url>
     </developer>
   </developers>
+  
+  <scm>
+    <connection>scm:git:git@github.com:ferstl/spring-jdbc-oracle.git</connection>
+    <developerConnection>scm:git:git@github.com:ferstl/spring-jdbc-oracle.git</developerConnection>
+    <url>${project.url}</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>${distribution.release.id}</id>
+      <url>${distribution.release.url}</url>
+    </repository>
+    <snapshotRepository>
+      <id>${distribution.snapshot.id}</id>
+      <url>${distribution.snapshot.url}</url>
+    </snapshotRepository>
+  </distributionManagement>
 
   <properties>
-    <springframework.version>3.2.2.RELEASE</springframework.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <main.basedir>${project.basedir}</main.basedir>
+    <springframework.version>3.2.2.RELEASE</springframework.version>
   </properties>
-  
+
   <modules>
     <module>spring-jdbc-oracle</module>
     <module>spring-jdbc-oracle-ojdbc</module>
     <module>spring-jdbc-oracle-tests</module>
   </modules>
-  
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -39,7 +72,7 @@
         <artifactId>spring-jdbc</artifactId>
         <version>${springframework.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
@@ -70,6 +103,23 @@
   <build>
     <pluginManagement>
       <plugins>
+        <plugin>
+          <groupId>com.mycila.maven-license-plugin</groupId>
+          <artifactId>maven-license-plugin</artifactId>
+          <version>1.9.0</version>
+          <configuration>
+            <header>${main.basedir}/etc/header.txt</header>
+            <strictCheck>true</strictCheck>
+            <mapping>
+              <java>SLASHSTAR_STYLE</java>
+            </mapping>
+            <includes>
+              <include>src/main/**</include>
+              <include>src/test/java/**</include>
+            </includes>
+          </configuration>
+        </plugin>
+        
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
