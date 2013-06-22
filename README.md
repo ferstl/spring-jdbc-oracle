@@ -17,15 +17,15 @@ Method (1) works out of the box since it uses `java.sql.Statement` and not `java
 So only methods (2) and (5) need to be re-implemented for Oracle Update Batching.
 
 ### How to run the Integration Tests
-1. Get yourself an Oracle database. In case you don't happen to have several k of Dollars under your pillow, [Oracle XE](http://www.oracle.com/technetwork/products/express-edition/overview/index.html) works perfectly fine.
+1. Get yourself an Oracle database. In case you don't happen to have several k of spare money under your pillow, [Oracle XE](http://www.oracle.com/technetwork/products/express-edition/overview/index.html) works perfectly fine.
 1. The default configuration of the integration tests assumes that you are running an Oracle database with the SID `XE` and a schema called `spring_jdbc_oracle` on localhost. Should this not be the case in your environment, you need to create a property file called `database_<your-system-username>.properties` in `spring-jdbc-oracle-integrationtest/src/test/resources` defining the coordinates of your database and schema. Take a look at the `database.properties` configuration file for the values that you set.
 1. Once the database is set up and configured, the tests need to be run with the system property `-Dtestgroup=integration`, e.g `mvn -Dtestgroup=integration clean test`.
 
 ### TODOs / Ideas
-* A lot of tests against an Oracle DB (Oracle XE is fine)
+* ~~A lot of tests against an Oracle DB (Oracle XE is fine)~~
   * ~~Correct batch size~~
   * ~~Tests with pooled `DataSource`s (tomcat-jdbc, commons-dbcp)~~
-  * Tests with `NamedParameterJdbcTemplate`
+  * ~~Tests with `NamedParameterJdbcTemplate`~~
 * ~~Eliminate OJDBC dependency from the POM~~
     * ~~Create a oracle.jdbc package which contains all interfaces and methods used by this implementation. Exclude the package from the created JAR file.~~
 * Supplementary methods that return `int` (sum of all affected rows in a batch update) instead of `int[]`
