@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.DataSourceProfile;
 
 import static com.github.ferstl.spring.jdbc.oracle.RowCountMatcher.matchesRowCounts;
+import static com.github.ferstl.spring.jdbc.oracle.RowCountPerBatchMatcher.matchesBatchedRowCounts;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -172,7 +173,7 @@ public class OracleJdbcTemplateIntegrationTest {
 
     int[][] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs, customBatchSize, new TestParameterizedPreparedStatementSetter());
 
-    assertThat(result, RowCountPerBatchMatcher.matchesBatchedRowCounts(customBatchSize, nrOfUpdates));
+    assertThat(result, matchesBatchedRowCounts(customBatchSize, nrOfUpdates));
   }
 
   @Test
@@ -186,7 +187,7 @@ public class OracleJdbcTemplateIntegrationTest {
 
     int[][] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs, customBatchSize, new TestParameterizedPreparedStatementSetter());
 
-    assertThat(result, RowCountPerBatchMatcher.matchesBatchedRowCounts(customBatchSize, nrOfUpdates));
+    assertThat(result, matchesBatchedRowCounts(customBatchSize, nrOfUpdates));
   }
 
   @Test
@@ -196,6 +197,6 @@ public class OracleJdbcTemplateIntegrationTest {
     int[][] result = this.jdbcTemplate.batchUpdate(
         SINGLE_ROW_SQL, Collections.<int[]>emptyList(), customBatchSize, new TestParameterizedPreparedStatementSetter());
 
-    assertThat(result, RowCountPerBatchMatcher.matchesBatchedRowCounts(customBatchSize, 0));
+    assertThat(result, matchesBatchedRowCounts(customBatchSize, 0));
   }
 }
