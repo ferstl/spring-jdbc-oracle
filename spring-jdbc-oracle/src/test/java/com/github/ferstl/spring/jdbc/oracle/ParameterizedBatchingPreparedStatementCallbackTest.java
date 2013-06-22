@@ -47,6 +47,7 @@ public class ParameterizedBatchingPreparedStatementCallbackTest {
   }
 
   private void doInPreparedStatement(int batchSize, int batchArgSize) throws SQLException {
+    @SuppressWarnings("unchecked")
     ParameterizedPreparedStatementSetter<String> ppss = mock(ParameterizedPreparedStatementSetter.class);
 
     // Create the arguments for the batch update
