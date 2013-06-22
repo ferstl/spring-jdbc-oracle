@@ -4,12 +4,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.ParameterDisposer;
 import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.core.StatementCreatorUtils;
 
-public class TestBatchPreparedStatementSetter implements BatchPreparedStatementSetter {
+public class TestBatchPreparedStatementSetter implements BatchPreparedStatementSetter, ParameterDisposer {
 
-  private final int[] parameters;
+  private int[] parameters;
 
   public TestBatchPreparedStatementSetter(int numberOfRows) {
     this.parameters = new int[numberOfRows];
@@ -21,13 +22,22 @@ public class TestBatchPreparedStatementSetter implements BatchPreparedStatementS
 
   @Override
   public void setValues(PreparedStatement ps, int i) throws SQLException {
-    StatementCreatorUtils.setParameterValue(ps, 1, SqlTypeValue.TYPE_UNKNOWN, 42);
+    StatementCreatorUtils.setParameterValue(ps, 1, SqlTypeValue.TYPE_UNKNOWN, Integer.MAX_VALUE);
     StatementCreatorUtils.setParameterValue(ps, 2, SqlTypeValue.TYPE_UNKNOWN, this.parameters[i]);
   }
 
   @Override
   public int getBatchSize() {
     return this.parameters.length;
+  }
+
+  @Override
+  public void cleanupParameters() {
+    this.parameters = null;
+  }
+
+  public boolean isCleanedUp() {
+    return this.parameters == null;
   }
 
 }

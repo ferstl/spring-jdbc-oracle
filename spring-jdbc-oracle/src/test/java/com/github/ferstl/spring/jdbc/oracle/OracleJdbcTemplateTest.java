@@ -1,8 +1,7 @@
 package com.github.ferstl.spring.jdbc.oracle;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -10,12 +9,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.ParameterDisposer;
-import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
-import org.springframework.jdbc.core.SqlTypeValue;
-import org.springframework.jdbc.core.StatementCreatorUtils;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -60,12 +54,12 @@ public class OracleJdbcTemplateTest {
 
   @Test
   public void withBatchPreparedStatementSetter() {
-    SingleIntBatchPreparedStatementSetter pss = new SingleIntBatchPreparedStatementSetter(6);
+    TestBatchPreparedStatementSetter pss = new TestBatchPreparedStatementSetter(6);
 
     int[] rowCounts = this.jdbcTemplate.batchUpdate("doesn't matter", pss);
 
     assertArrayEquals(rowCounts, new int[] {0, 0, 0, 0, 5, 1});
-    assertTrue("Parameters not disposed", pss.cleanupCalled);
+    assertTrue("Parameters not disposed", pss.isCleanedUp());
   }
 
   @Test
@@ -103,61 +97,17 @@ public class OracleJdbcTemplateTest {
 
   @Test
   public void withParameterizedPss() {
-    NopParameterizedPreparedStatementSetter pss = new NopParameterizedPreparedStatementSetter();
-    int[][] rowCounts = this.jdbcTemplate.batchUpdate(
-        "doesn't matter", Arrays.asList("1", "2", "3", "4", "5", "6"), 4, pss);
+    TestParameterizedPreparedStatementSetter pss = new TestParameterizedPreparedStatementSetter();
+    List<int[]> argList = new ArrayList<>(6);
+    for (int i = 0; i < 6; i++) {
+      argList.add(new int[] {i, i});
+    }
+
+    int[][] rowCounts = this.jdbcTemplate.batchUpdate("doesn't matter", argList, 4, pss);
 
     assertEquals("Expected 2 batches", 2, rowCounts.length);
     assertArrayEquals(rowCounts[0], new int[]{0, 0, 0, 4});
     assertArrayEquals(rowCounts[1], new int[] {0, 2});
-    assertTrue("Parameters were not disposed", pss.cleanupCalled);
+    assertTrue("Parameters were not disposed", pss.isCleanedUp());
   }
-
-
-  static class SingleIntBatchPreparedStatementSetter implements BatchPreparedStatementSetter, ParameterDisposer {
-
-    private boolean cleanupCalled;
-    private final int[] array;
-
-    public SingleIntBatchPreparedStatementSetter(int size) {
-      this.cleanupCalled = false;
-
-      this.array = new int[size];
-      for (int i = 0; i < size; i++) {
-        this.array[i] = i;
-      }
-    }
-
-    @Override
-    public void setValues(PreparedStatement ps, int i) throws SQLException {
-      int val = this.array[i];
-      StatementCreatorUtils.setParameterValue(ps, 1, SqlTypeValue.TYPE_UNKNOWN, val);
-    }
-
-    @Override
-    public int getBatchSize() {
-      return this.array.length;
-    }
-
-    @Override
-    public void cleanupParameters() {
-      this.cleanupCalled = true;
-    }
-  }
-
-  static class NopParameterizedPreparedStatementSetter implements ParameterizedPreparedStatementSetter<String>, ParameterDisposer {
-
-    private boolean cleanupCalled = false;
-
-    @Override
-    public void setValues(PreparedStatement ps, String argument) throws SQLException {
-      // NOP
-    }
-
-    @Override
-    public void cleanupParameters() {
-      this.cleanupCalled = true;
-    }
-  }
-
 }
