@@ -32,7 +32,7 @@ import static org.junit.Assert.assertThat;
 @ActiveProfiles(DataSourceProfile.SINGLE_CONNECTION)
 //@ActiveProfiles(DataSourceProfile.COMMONS_DBCP)
 //@ActiveProfiles(DataSourceProfile.TOMCAT_POOL)
-public class OracleJdbcTemplateIntegrationTest extends AbstractOracleJdbcTemplateIntegrationTest {
+public class AbstractUpdateBatchingIntegrationTest extends AbstractOracleJdbcTemplateIntegrationTest {
 
   /** SQL that updates one single row. */
   private static final String SINGLE_ROW_SQL = "UPDATE test_table t SET t.numval = ? WHERE t.numval = ?";
