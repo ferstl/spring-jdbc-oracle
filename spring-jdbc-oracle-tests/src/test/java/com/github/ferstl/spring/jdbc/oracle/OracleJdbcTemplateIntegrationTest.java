@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 import org.springframework.jdbc.core.SqlTypeValue;
 import org.springframework.jdbc.core.StatementCreatorUtils;
 import org.springframework.jdbc.core.support.AbstractInterruptibleBatchPreparedStatementSetter;
@@ -167,6 +168,46 @@ public class OracleJdbcTemplateIntegrationTest {
     assertEquals(0, result.length);
   }
 
+  @Test
+  public void updateCompleteBatchWithParameterizedPss() {
+    int customBatchSize = 5;
+    int nrOfUpdates = 2 * customBatchSize;
+    List<int[]> batchArgs = new ArrayList<>(nrOfUpdates);
+    for (int i = 0; i < nrOfUpdates; i++) {
+      batchArgs.add(new int[] { i + 1, i + 11 });
+    }
+
+    int[][] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs, customBatchSize, new SingleRowParameterizedPreparedStatementSetter());
+
+    assertThat(result, RowCountPerBatchMatcher.matchesBatchedRowCounts(customBatchSize, nrOfUpdates));
+  }
+
+  @Test
+  public void updateInompleteBatchWithParameterizedPss() {
+    int customBatchSize = 5;
+    int nrOfUpdates = customBatchSize + 2;
+    List<int[]> batchArgs = new ArrayList<>(nrOfUpdates);
+    for (int i = 0; i < nrOfUpdates; i++) {
+      batchArgs.add(new int[] { i + 1, i + 11 });
+    }
+
+    int[][] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs, customBatchSize, new SingleRowParameterizedPreparedStatementSetter());
+
+    assertThat(result, RowCountPerBatchMatcher.matchesBatchedRowCounts(customBatchSize, nrOfUpdates));
+  }
+
+  @Test
+  public void updateInompleteBatchWithParameterizedPssEmptyArgList() {
+    int customBatchSize = 5;
+
+    int[][] result = this.jdbcTemplate.batchUpdate(
+        SINGLE_ROW_SQL, Collections.<int[]>emptyList(), customBatchSize, new SingleRowParameterizedPreparedStatementSetter());
+
+    assertThat(result, RowCountPerBatchMatcher.matchesBatchedRowCounts(customBatchSize, 0));
+  }
+
+
+
   static class SingleRowPreparedStatementSetter implements BatchPreparedStatementSetter {
 
     private final int[] parameters;
@@ -215,7 +256,16 @@ public class OracleJdbcTemplateIntegrationTest {
 
       return true;
     }
+  }
 
+  static class SingleRowParameterizedPreparedStatementSetter implements ParameterizedPreparedStatementSetter<int[]> {
+
+    @Override
+    public void setValues(PreparedStatement ps, int[] argument) throws SQLException {
+      for (int i = 0; i < argument.length; i++) {
+        StatementCreatorUtils.setParameterValue(ps, i + 1, SqlTypeValue.TYPE_UNKNOWN, argument[i]);
+      }
+    }
 
   }
 }
