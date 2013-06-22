@@ -56,8 +56,8 @@
 
   <modules>
     <module>spring-jdbc-oracle</module>
+    <module>spring-jdbc-oracle-integrationtests</module>
     <module>spring-jdbc-oracle-ojdbc</module>
-    <module>spring-jdbc-oracle-tests</module>
   </modules>
 
   <dependencyManagement>
