@@ -39,7 +39,7 @@ public class TestParameterizedPreparedStatementSetter implements ParameterizedPr
     this.cleanedUp = true;
   }
 
-  public boolean isCleanedUp() {
+  public boolean isDisposed() {
     return this.cleanedUp;
   }
 

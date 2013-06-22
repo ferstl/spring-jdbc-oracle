@@ -74,7 +74,7 @@ public class OracleJdbcTemplateTest {
     int[] rowCounts = this.jdbcTemplate.batchUpdate("doesn't matter", pss);
 
     assertArrayEquals(rowCounts, new int[] {0, 0, 0, 0, 5, 1});
-    assertTrue("Parameters not disposed", pss.isCleanedUp());
+    assertTrue("Parameters not disposed", pss.isDisposed());
   }
 
   @Test
@@ -123,6 +123,6 @@ public class OracleJdbcTemplateTest {
     assertEquals("Expected 2 batches", 2, rowCounts.length);
     assertArrayEquals(rowCounts[0], new int[]{0, 0, 0, 4});
     assertArrayEquals(rowCounts[1], new int[] {0, 2});
-    assertTrue("Parameters were not disposed", pss.isCleanedUp());
+    assertTrue("Parameters were not disposed", pss.isDisposed());
   }
 }

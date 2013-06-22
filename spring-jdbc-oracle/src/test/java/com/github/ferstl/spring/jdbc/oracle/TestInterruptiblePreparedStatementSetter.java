@@ -52,7 +52,7 @@ public class TestInterruptiblePreparedStatementSetter extends AbstractInterrupti
     this.parameters = null;
   }
 
-  public boolean isCleanedUp() {
+  public boolean isDisposed() {
     return this.parameters == null;
   }
 }

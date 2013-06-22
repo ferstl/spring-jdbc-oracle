@@ -51,7 +51,7 @@ public class TestBatchPreparedStatementSetter implements BatchPreparedStatementS
     this.parameters = null;
   }
 
-  public boolean isCleanedUp() {
+  public boolean isDisposed() {
     return this.parameters == null;
   }
 
