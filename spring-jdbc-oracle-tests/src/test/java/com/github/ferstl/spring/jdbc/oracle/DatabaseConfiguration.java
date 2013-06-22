@@ -33,7 +33,7 @@ import com.github.ferstl.spring.jdbc.oracle.dsconfig.TomcatPoolDataSourceConfigu
 @PropertySource({
   "classpath:database.properties",
   "classpath:database_${user.name}.properties",
-  "connectionpool.properties"})
+  "classpath:connectionpool.properties"})
 @Import({
   SingleConnectionDataSourceConfiguration.class,
   TomcatPoolDataSourceConfiguration.class,
