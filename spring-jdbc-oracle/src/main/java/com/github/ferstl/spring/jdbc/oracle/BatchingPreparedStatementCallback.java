@@ -66,10 +66,10 @@ class BatchingPreparedStatementCallback implements PreparedStatementCallback<int
     ops.setExecuteBatch(this.sendBatchSize);
     int i = 0;
     while (i < ipss.getBatchSize()) {
+      ipss.setValues(ops, i);
       if (ipss.isBatchExhausted(i)) {
         break;
       }
-      ipss.setValues(ops, i);
       rowCounts.add(ops.executeUpdate());
       i++;
     }
