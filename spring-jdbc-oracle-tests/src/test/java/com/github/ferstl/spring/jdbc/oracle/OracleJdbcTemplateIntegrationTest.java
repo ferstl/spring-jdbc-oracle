@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.DataSourceProfile;
 
+import static com.github.ferstl.spring.jdbc.oracle.RowCountMatcher.matchesRowCounts;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
@@ -64,7 +65,7 @@ public class OracleJdbcTemplateIntegrationTest {
 
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs);
 
-    assertThat(result, RowCountMatcher.matchesRowCounts(this.batchSize, nrOfUpdates));
+    assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
   }
 
   @Test
@@ -77,7 +78,7 @@ public class OracleJdbcTemplateIntegrationTest {
 
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs);
 
-    assertThat(result, RowCountMatcher.matchesRowCounts(this.batchSize, nrOfUpdates));
+    assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
   }
 
   @Test
