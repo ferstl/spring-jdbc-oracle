@@ -56,12 +56,7 @@ public class OracleJdbcTemplateIntegrationTest {
   @Test
   public void updateCompleteBatchWithArgList() {
     int nrOfUpdates = 2 * this.batchSize;
-    List<Object[]> batchArgs = new ArrayList<>(nrOfUpdates);
-    for (int i = 0; i < nrOfUpdates; i++) {
-      batchArgs.add(new Object[] { i + 1, i + 11 });
-    }
-
-    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs);
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, createBatchArgs(nrOfUpdates));
 
     assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
   }
@@ -69,12 +64,7 @@ public class OracleJdbcTemplateIntegrationTest {
   @Test
   public void updateIncompleteBatchWithArgList() {
     int nrOfUpdates = this.batchSize + 2;
-    List<Object[]> batchArgs = new ArrayList<>(nrOfUpdates);
-    for (int i = 0; i < nrOfUpdates; i++) {
-      batchArgs.add(new Object[] { i + 1, i + 11 });
-    }
-
-    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs);
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, createBatchArgs(nrOfUpdates));
 
     assertThat(result, matchesRowCounts(this.batchSize, nrOfUpdates));
   }
@@ -82,12 +72,10 @@ public class OracleJdbcTemplateIntegrationTest {
   @Test
   public void noUpdateWithArgList() {
     int nrOfUpdates = this.batchSize * 2 + 2;
-
     List<Object[]> batchArgs = new ArrayList<>(nrOfUpdates);
     for (int i = 0; i < nrOfUpdates; i++) {
-      batchArgs.add(new Object[] { i + 1, Integer.MAX_VALUE });
+      batchArgs.add(new Object[] {Integer.MAX_VALUE, Integer.MAX_VALUE});
     }
-
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs);
 
     assertEquals(nrOfUpdates, result.length);
@@ -166,12 +154,8 @@ public class OracleJdbcTemplateIntegrationTest {
   public void updateCompleteBatchWithParameterizedPss() {
     int customBatchSize = 5;
     int nrOfUpdates = 2 * customBatchSize;
-    List<int[]> batchArgs = new ArrayList<>(nrOfUpdates);
-    for (int i = 0; i < nrOfUpdates; i++) {
-      batchArgs.add(new int[] { i + 1, i + 11 });
-    }
-
-    int[][] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs, customBatchSize, new TestParameterizedPreparedStatementSetter());
+    int[][] result = this.jdbcTemplate.batchUpdate(
+        SINGLE_ROW_SQL, createIntBatchArgs(nrOfUpdates), customBatchSize, new TestParameterizedPreparedStatementSetter());
 
     assertThat(result, matchesBatchedRowCounts(customBatchSize, nrOfUpdates));
   }
@@ -180,12 +164,8 @@ public class OracleJdbcTemplateIntegrationTest {
   public void updateInompleteBatchWithParameterizedPss() {
     int customBatchSize = 5;
     int nrOfUpdates = customBatchSize + 2;
-    List<int[]> batchArgs = new ArrayList<>(nrOfUpdates);
-    for (int i = 0; i < nrOfUpdates; i++) {
-      batchArgs.add(new int[] { i + 1, i + 11 });
-    }
-
-    int[][] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, batchArgs, customBatchSize, new TestParameterizedPreparedStatementSetter());
+    int[][] result = this.jdbcTemplate.batchUpdate(
+        SINGLE_ROW_SQL, createIntBatchArgs(nrOfUpdates), customBatchSize, new TestParameterizedPreparedStatementSetter());
 
     assertThat(result, matchesBatchedRowCounts(customBatchSize, nrOfUpdates));
   }
@@ -198,5 +178,21 @@ public class OracleJdbcTemplateIntegrationTest {
         SINGLE_ROW_SQL, Collections.<int[]>emptyList(), customBatchSize, new TestParameterizedPreparedStatementSetter());
 
     assertThat(result, matchesBatchedRowCounts(customBatchSize, 0));
+  }
+
+  private static List<Object[]> createBatchArgs(int nrOfUpdates) {
+    List<Object[]> batchArgs = new ArrayList<>(nrOfUpdates);
+    for (int i = 0; i < nrOfUpdates; i++) {
+      batchArgs.add(new Object[] { Integer.MAX_VALUE, i + 11 });
+    }
+    return batchArgs;
+  }
+
+  private static List<int[]> createIntBatchArgs(int nrOfUpdates) {
+    List<int[]> batchArgs = new ArrayList<>(nrOfUpdates);
+    for (int i = 0; i < nrOfUpdates; i++) {
+      batchArgs.add(new int[] { i + 1, i + 11 });
+    }
+    return batchArgs;
   }
 }
