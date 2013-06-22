@@ -19,11 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.DataSourceProfile;
@@ -46,19 +42,6 @@ public class OracleJdbcTemplateIntegrationTest extends AbstractOracleJdbcTemplat
 
   /** SQL that verifies the result of {@link #SINGLE_ROW_SQL}. */
   private static final String SINGLE_ROW_VERIFY_SQL = "SELECT count(numval) FROM test_table t WHERE t.numval = ?";
-
-  @Autowired
-  private JdbcTemplate jdbcTemplate;
-
-  @Autowired
-  private Environment env;
-
-  private int batchSize;
-
-  @Before
-  public void before() {
-    this.batchSize = this.env.getProperty("db.batchsize", Integer.class);
-  }
 
   @Test
   public void updateCompleteBatchWithArgList() {
