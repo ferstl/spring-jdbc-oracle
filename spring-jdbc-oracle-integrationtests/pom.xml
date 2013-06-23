@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.github.ferstl</groupId>
     <artifactId>spring-jdbc-oracle-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>0.9.0</version>
   </parent>
 
   <artifactId>spring-jdbc-oracle-integrationtests</artifactId>
