@@ -19,7 +19,7 @@ Binaries and source code of this project are available on [Maven Central](http:/
     <dependency>
       <groupId>com.github.ferstl</groupId>
       <artifactId>spring-jdbc-oracle</artifactId>
-      <version>1.0.0</version>
+      <version>0.9.0</version>
     </dependency>
     
     <!-- Dependency to Oracle's JDBC driver (use the coordinates under which you deployed the driver). -->
