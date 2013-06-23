@@ -8,11 +8,15 @@
   <version>1.0.0-SNAPSHOT</version>
 
   <description>
-    A variant of Spring's JdbcTemplate that uses Oracle Update Batching. 
+    A variant of Spring's JdbcTemplate that uses Oracle Update Batching. If Spring's classic JdbcTemplate is used in
+    combination with an Oracle DB, the `batchUpdate()` methods won't return the number of affected rows. Instead, these
+    methods do always return an array containing -2 (`Statement#SUCCESS_NO_INFO`) in each element. In order to get the
+    number of affected rows during a batch INSERT/UPDATE/DELETE, it is required to use
+    [Oracle Update Batching](http://docs.oracle.com/cd/B28359_01/java.111/b31224/oraperf.htm#autoId2).
   </description>
-  
+
   <url>https://github.com/ferstl/spring-jdbc-oracle</url>
-  
+
   <licenses>
     <license>
       <name>Apache 2</name>
@@ -20,7 +24,7 @@
       <distribution>repo</distribution>
     </license>
   </licenses>
-  
+
   <developers>
     <developer>
       <id>ferstl</id>
@@ -29,7 +33,7 @@
       <url>https://github.com/ferstl</url>
     </developer>
   </developers>
-  
+
   <scm>
     <connection>scm:git:git@github.com:ferstl/spring-jdbc-oracle.git</connection>
     <developerConnection>scm:git:git@github.com:ferstl/spring-jdbc-oracle.git</developerConnection>
@@ -49,9 +53,23 @@
   </distributionManagement>
 
   <properties>
+    <!-- Plugin versions -->
+    <maven-license-plugin.version>1.9.0</maven-license-plugin.version>
+    <maven-compiler-plugin.version>3.0</maven-compiler-plugin.version>
+    <maven-jar-plugin.version>2.3.2</maven-jar-plugin.version>
+    <maven-gpg-plugin.version>1.4</maven-gpg-plugin.version>
+    <maven-javadoc-plugin.version>2.9</maven-javadoc-plugin.version>
+    <maven-release-plugin.version>2.4.1</maven-release-plugin.version>
+
+    <!-- Dependency versions -->
+    <springframework.version>3.2.3.RELEASE</springframework.version>
+    <junit.version>4.11</junit.version>
+    <hamcrest.version>1.3</hamcrest.version>
+    <mockito.version>1.9.0</mockito.version>
+
+    <!-- Build properties -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <main.basedir>${project.basedir}</main.basedir>
-    <springframework.version>3.2.2.RELEASE</springframework.version>
   </properties>
 
   <modules>
@@ -76,19 +94,19 @@
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.11</version>
+        <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest-library</artifactId>
-        <version>1.3</version>
+        <version>${hamcrest.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
         <artifactId>mockito-core</artifactId>
-        <version>1.9.0</version>
+        <version>${mockito.version}</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -106,7 +124,7 @@
         <plugin>
           <groupId>com.mycila.maven-license-plugin</groupId>
           <artifactId>maven-license-plugin</artifactId>
-          <version>1.9.0</version>
+          <version>${maven-license-plugin.version}</version>
           <configuration>
             <header>${main.basedir}/etc/header.txt</header>
             <strictCheck>true</strictCheck>
@@ -119,22 +137,88 @@
             </includes>
           </configuration>
         </plugin>
-        
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.0</version>
+          <version>${maven-compiler-plugin.version}</version>
           <configuration>
             <source>1.7</source>
             <target>1.7</target>
           </configuration>
         </plugin>
+
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>2.3.2</version>
+          <version>${maven-jar-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-gpg-plugin</artifactId>
+          <version>${maven-gpg-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${maven-javadoc-plugin.version}</version>
+          <configuration>
+            <show>private</show>
+            <links>
+              <link>http://static.springsource.org/spring/docs/3.2.x/javadoc-api/</link>
+            </links>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>${maven-release-plugin.version}</version>
+          <configuration>
+            <mavenExecutorId>forked-path</mavenExecutorId>
+            <useReleaseProfile>false</useReleaseProfile>
+            <arguments>-Pdeploy-to-sonatype-oss</arguments>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
   </build>
+
+  <profiles>
+    <profile>
+      <id>deploy-to-sonatype-oss</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
 </project>
