@@ -50,10 +50,10 @@ class BatchingPreparedStatementCallback implements PreparedStatementCallback<int
       InterruptibleBatchPreparedStatementSetter ipss = (InterruptibleBatchPreparedStatementSetter) this.pss;
       executeUpdate(ops, ipss, rowCounts);
     } else {
-      int completeBatchSize = (batchSize / this.sendBatchSize) * this.sendBatchSize;
-      int remainingBatchSize = batchSize % this.sendBatchSize;
-      executeUpdate(ops, rowCounts, 0, completeBatchSize);
-      executeUpdate(ops, rowCounts, completeBatchSize, completeBatchSize + remainingBatchSize);
+      int sizeOfCompleteBatches = (batchSize / this.sendBatchSize) * this.sendBatchSize;
+      int sizeOfLastBatch = batchSize % this.sendBatchSize;
+      executeUpdate(ops, rowCounts, 0, sizeOfCompleteBatches);
+      executeUpdate(ops, rowCounts, sizeOfCompleteBatches, sizeOfCompleteBatches + sizeOfLastBatch);
     }
 
     return toIntArray(rowCounts);
