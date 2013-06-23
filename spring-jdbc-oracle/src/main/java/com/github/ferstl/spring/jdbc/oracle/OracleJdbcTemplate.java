@@ -25,7 +25,14 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ParameterDisposer;
 import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 
-
+/**
+ * A subclass of Spring's {@link JdbcTemplate} the uses
+ * <a href="http://docs.oracle.com/cd/B28359_01/java.111/b31224/oraperf.htm#autoId2">Oracle Update Batching</a>. Each of
+ * the {@code batchUpdate()} methods in this class will return the number of updated rows on the DB. However, batches
+ * are processed as a whole, so it is not possible to find out the number of updated rows for each individual statement
+ * in a batch. For example, if the batch size is set to 5 and a batch update containing 7 statements
+ * (each of which updates exactly one row) is executed, the result will be {@code [0, 0, 0, 0, 5, 0, 2]}.
+ */
 public class OracleJdbcTemplate extends JdbcTemplate {
 
   private final int sendBatchSize;

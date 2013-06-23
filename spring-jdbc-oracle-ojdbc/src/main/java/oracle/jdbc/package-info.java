@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 /**
- * Contains dummy interfaces in order to avoid direct dependencies to OJDBC. This package will not be part of the
- * created JAR file.
+ * Contains fake OJDBC interfaces in order to avoid direct dependencies to OJDBC. This package must only be used during
+ * compile time and must not be part of any library!
  */
 package oracle.jdbc;

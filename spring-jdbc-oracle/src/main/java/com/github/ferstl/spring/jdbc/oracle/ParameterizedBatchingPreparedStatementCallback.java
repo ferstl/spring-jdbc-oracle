@@ -27,6 +27,9 @@ import org.springframework.jdbc.core.PreparedStatementCallback;
 
 import oracle.jdbc.OraclePreparedStatement;
 
+/**
+ * {@link PreparedStatementCallback} that uses Oracle Update Batching.
+ */
 class ParameterizedBatchingPreparedStatementCallback<T> implements PreparedStatementCallback<int[][]> {
 
   private final ParameterizedPreparedStatementSetter<T> ppss;
@@ -34,6 +37,12 @@ class ParameterizedBatchingPreparedStatementCallback<T> implements PreparedState
   private final List<T> batchArgs;
 
 
+  /**
+   * Constructor.
+   * @param ppss Parameterized Prepared Statement Setter.
+   * @param sendBatchSize Size of the batch that will be sent to the DB.
+   * @param batchArgs Batch arguments.
+   */
   public ParameterizedBatchingPreparedStatementCallback(
       ParameterizedPreparedStatementSetter<T> ppss,
       int sendBatchSize,
