@@ -13,7 +13,7 @@ The classic JdbcTemplate contains a few more overloaded `batchUpdate()` methods 
 ### How to use the OracleJdbcTemplate
 
 #### Maven Dependencies
-Binaries and source code of this project are available on [Maven Central](http://central.maven.org/maven2/com/github/ferstl/spring-jdbc-oracle), so no further repository configuration is required. However, an additional dependency to [Oracle's proprietary JDBC driver](http://www.oracle.com/technetwork/database/enterprise-edition/jdbc-112010-090769.html) (OJDBC) is required and needs to be installed manually in your maven repositories. Once the OJDBC driver is available in your repository, the maven setup looks like this:
+Binaries and source code of this project are available on [Maven Central](http://central.maven.org/maven2/com/github/ferstl/spring-jdbc-oracle/), so no further repository configuration is required. However, an additional dependency to [Oracle's proprietary JDBC driver](http://www.oracle.com/technetwork/database/enterprise-edition/jdbc-112010-090769.html) (OJDBC) is required and needs to be installed manually in your maven repositories. Once the OJDBC driver is available in your repository, the maven setup looks like this:
 
     <!-- Dependency containing the OracleJdbcTemplate -->
     <dependency>
