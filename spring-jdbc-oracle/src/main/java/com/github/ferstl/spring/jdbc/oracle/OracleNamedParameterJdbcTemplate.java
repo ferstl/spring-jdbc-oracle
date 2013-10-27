@@ -63,17 +63,17 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
             if (index >= 0) {
                 int endIndex = sql.length();
                 for (int i = index + 1; i < sql.length(); ++i) {
-                    char c = sql.charAt(index);
+                    char c = sql.charAt(i);
                     if (Character.isWhitespace(c)) {
                         endIndex = i;
                         break;
                     }
                 }
                 if (endIndex < sql.length()) {
-                    names.add(sql.substring(startIndex + 1, endIndex));
+                    names.add(sql.substring(index + 1, endIndex));
                     startIndex = endIndex;
                 } else {
-                    names.add(sql.substring(startIndex + 1));
+                    names.add(sql.substring(index + 1));
                     break;
                 }
             } else {
