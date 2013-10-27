@@ -16,6 +16,8 @@
 package com.github.ferstl.spring.jdbc.oracle;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcOperations;
@@ -45,6 +47,13 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
         List<String> names = findNames(sql);
         List<SqlParameter> parameters = new ArrayList<>(names.size());
         Object[] values = new Object[names.size()];
+
+        List<Integer> collectionIndices = getCollectionIndices(values);
+        if (!collectionIndices.isEmpty()) {
+            values = flatten(values);
+            // TODO rewrite SQL
+        }
+
         int i = 0;
         for (String name : names) {
             SqlParameter parameter = new SqlParameter(paramSource.getSqlType(name), paramSource.getTypeName(name));
@@ -53,6 +62,49 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
         }
         PreparedStatementCreatorFactory pscf = new PreparedStatementCreatorFactory(sql, parameters);
         return pscf.newPreparedStatementCreator(values);
+    }
+
+    private Object[] flatten(Object[] values) {
+        int size = 0;
+        for (Object value : values) {
+            if (value instanceof Collection) {
+                size += ((Collection<?>) value).size();
+            } else {
+                size += 1;
+            }
+        }
+        Object[] flat = new Object[size];
+        int i = 0;
+        for (Object value : values) {
+            if (value instanceof Collection) {
+                for (Object inner : (Collection<?>) value) {
+                    flat[i++] = inner;
+                }
+            } else {
+                flat[i++] = value;
+            }
+        }
+
+        return flat;
+    }
+
+    private List<Integer> getCollectionIndices(Object[] values) {
+        List<Integer> indices = null;
+        for (int i = 0; i < values.length; ++i) {
+            Object value = values[i];
+            if (value instanceof Collection) {
+                if (indices == null) {
+                    indices = new ArrayList<>(2);
+                }
+                indices.add(i);
+            }
+        }
+
+        if (indices != null) {
+            return indices;
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     private List<String> findNames(String sql) {
