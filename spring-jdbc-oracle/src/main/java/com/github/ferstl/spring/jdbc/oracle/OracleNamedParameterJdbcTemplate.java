@@ -16,17 +16,12 @@
 package com.github.ferstl.spring.jdbc.oracle;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
+import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
@@ -47,60 +42,45 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
 
     @Override
     protected PreparedStatementCreator getPreparedStatementCreator(String sql, SqlParameterSource paramSource) {
-        if (paramSource instanceof MapSqlParameterSource) {
-            MapSqlParameterSource mapSource = (MapSqlParameterSource) paramSource;
-            List<String> nameIndices = buildNameIndices(sql, mapSource.getValues().keySet());
-        } else if (paramSource instanceof BeanPropertySqlParameterSource) {
-            BeanPropertySqlParameterSource beanSource = (BeanPropertySqlParameterSource) paramSource;
-            List<String> nameIndices = buildNameIndices(sql, Arrays.asList(beanSource.getReadablePropertyNames()));
-        }
-    }
-
-    private List<String> buildNameIndices(String sql, Collection<String> names) {
-        Map<String, List<Integer>> startIndices = new HashMap<>(names.size());
+        List<String> names = findNames(sql);
+        List<SqlParameter> parameters = new ArrayList<>(names.size());
+        Object[] values = new Object[names.size()];
+        int i = 0;
         for (String name : names) {
-            startIndices.put(name, startIndices(sql, name));
+            SqlParameter parameter = new SqlParameter(paramSource.getSqlType(name), paramSource.getTypeName(name));
+            parameters.add(parameter);
+            values[i++] = paramSource.getValue(name);
         }
+        PreparedStatementCreatorFactory pscf = new PreparedStatementCreatorFactory(sql, parameters);
+        return pscf.newPreparedStatementCreator(values);
     }
 
-    private List<Integer> startIndices(String sql, String name) {
-        String key = ':' + name; // REVIEW could be avoided
-        List<Integer> indices = null;
+    private List<String> findNames(String sql) {
+        List<String> names = new ArrayList<>();
         int startIndex = 0;
         while (startIndex >= 0) {
-            int index = sql.indexOf(sql, startIndex);
+            int index = sql.indexOf(':', startIndex);
             if (index >= 0) {
-                boolean found;
-                if (name.length() == index + key.length()) {
-                    // SQL ends with :name
-                    found = true;
-                } else {
-                    // check if we found :name or :name2
-                    char next = sql.charAt(index + key.length() + 1);
-                    found = Character.isWhitespace(next);
-                }
-                if (found) {
-                    if (indices == null) {
-                        // optimize for the case where a single named parameter occurs only once
-                        indices = Collections.singletonList(index);
-                    } else if (indices.size() == 1) {
-                        List<Integer> newIndices = new ArrayList<>(2);
-                        newIndices.add(indices.get(0));
-                        newIndices.add(index);
-                        indices = newIndices;
-                    } else {
-                        indices.add(index);
+                int endIndex = sql.length();
+                for (int i = index + 1; i < sql.length(); ++i) {
+                    char c = sql.charAt(index);
+                    if (Character.isWhitespace(c)) {
+                        endIndex = i;
+                        break;
                     }
+                }
+                if (endIndex < sql.length()) {
+                    names.add(sql.substring(startIndex + 1, endIndex));
+                    startIndex = endIndex;
+                } else {
+                    names.add(sql.substring(startIndex + 1));
+                    break;
                 }
             } else {
                 break;
             }
         }
-        if (indices != null) {
-            return indices;
-        } else {
-            return Collections.emptyList();
-        }
+        return names;
     }
 
 }
