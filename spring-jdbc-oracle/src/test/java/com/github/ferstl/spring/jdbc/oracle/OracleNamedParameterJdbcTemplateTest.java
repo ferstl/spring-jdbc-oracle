@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2013 by Philippe Marschall <philippe.marschall@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.github.ferstl.spring.jdbc.oracle;
 
 import static org.mockito.Mockito.mock;
@@ -116,6 +131,56 @@ public class OracleNamedParameterJdbcTemplateTest {
         verify(preparedStatement).setObject(3, 23);
         verify(preparedStatement).setObject(4, 42);
         verify(preparedStatement).setObject(5, 20);
+    }
+
+    @Test
+    public void endsWithCollection() throws SQLException {
+        Map<String, Object> map = new HashMap<>(3);
+        map.put("ten", 10);
+        map.put("twenty", 20);
+        map.put("collection", Arrays.asList(1, 23, 42));
+        String sql = "SELECT 1 FROM dual WHERE 10 = :ten or 42 in (:collection)";
+        String expectedSql = "SELECT 1 FROM dual WHERE 10 = :ten or 42 in (?,?,?)";
+        PreparedStatementCreator preparedStatementCreator = this.namedJdbcTemplate.getPreparedStatementCreator(
+                sql,
+                new MapSqlParameterSource(map));
+
+        Connection connection = mock(Connection.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+
+        when(connection.prepareStatement(expectedSql)).thenReturn(preparedStatement);
+
+        preparedStatementCreator.createPreparedStatement(connection);
+
+        verify(preparedStatement).setObject(1, 10);
+        verify(preparedStatement).setObject(2, 1);
+        verify(preparedStatement).setObject(3, 23);
+        verify(preparedStatement).setObject(4, 42);
+    }
+
+    @Test
+    public void endsWithCollectionSpace() throws SQLException {
+        Map<String, Object> map = new HashMap<>(3);
+        map.put("ten", 10);
+        map.put("twenty", 20);
+        map.put("collection", Arrays.asList(1, 23, 42));
+        String sql = "SELECT 1 FROM dual WHERE 10 = :ten or 42 in (:collection) ";
+        String expectedSql = "SELECT 1 FROM dual WHERE 10 = :ten or 42 in (?,?,?) ";
+        PreparedStatementCreator preparedStatementCreator = this.namedJdbcTemplate.getPreparedStatementCreator(
+                sql,
+                new MapSqlParameterSource(map));
+
+        Connection connection = mock(Connection.class);
+        PreparedStatement preparedStatement = mock(PreparedStatement.class);
+
+        when(connection.prepareStatement(expectedSql)).thenReturn(preparedStatement);
+
+        preparedStatementCreator.createPreparedStatement(connection);
+
+        verify(preparedStatement).setObject(1, 10);
+        verify(preparedStatement).setObject(2, 1);
+        verify(preparedStatement).setObject(3, 23);
+        verify(preparedStatement).setObject(4, 42);
     }
 
 }
