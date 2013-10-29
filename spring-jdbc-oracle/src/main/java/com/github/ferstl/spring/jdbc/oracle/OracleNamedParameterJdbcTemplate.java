@@ -18,6 +18,7 @@ package com.github.ferstl.spring.jdbc.oracle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.jdbc.core.JdbcOperations;
@@ -43,25 +44,85 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
     }
 
     @Override
-    protected PreparedStatementCreator getPreparedStatementCreator(String sql, SqlParameterSource paramSource) {
-        List<String> names = findNames(sql);
-        List<SqlParameter> parameters = new ArrayList<>(names.size());
-        Object[] values = new Object[names.size()];
+    protected PreparedStatementCreator getPreparedStatementCreator(String sql, SqlParameterSource parameterSource) {
+        List<String> parameterNames = findParameterNames(sql);
+        List<SqlParameter> parameters = new ArrayList<>(parameterNames.size());
+        Object[] values = new Object[parameterNames.size()];
 
-        List<Integer> collectionIndices = getCollectionIndices(values);
+        List<Integer> collectionIndices = getCollectionIndices(parameterNames, parameterSource);
         if (!collectionIndices.isEmpty()) {
             values = flatten(values);
-            // TODO rewrite SQL
+            sql = expandCollectionPlaceholders(sql, collectionIndices, parameterNames, parameterSource);
         }
 
         int i = 0;
-        for (String name : names) {
-            SqlParameter parameter = new SqlParameter(paramSource.getSqlType(name), paramSource.getTypeName(name));
+        for (String parameterName : parameterNames) {
+            int sqlType = parameterSource.getSqlType(parameterName);
+            String typeName = parameterSource.getTypeName(parameterName);
+            SqlParameter parameter = new SqlParameter(sqlType, typeName);
             parameters.add(parameter);
-            values[i++] = paramSource.getValue(name);
+            values[i++] = parameterSource.getValue(parameterName);
         }
         PreparedStatementCreatorFactory pscf = new PreparedStatementCreatorFactory(sql, parameters);
         return pscf.newPreparedStatementCreator(values);
+    }
+
+    private String expandCollectionPlaceholders(String sql, List<Integer> collectionIndices, List<String> parameterNames, SqlParameterSource parameterSource) {
+        StringBuilder buffer = new StringBuilder((int) (sql.length() * 1.1));
+        Iterator<Integer> collectionIterator = collectionIndices.iterator();
+        int collectionIndex = collectionIterator.next();
+
+        int startIndex = 0;
+        int parameterIndex = 0;
+        while (startIndex >= 0) {
+            int index = sql.indexOf(':', startIndex);
+            if (index >= 0) {
+                int endIndex = sql.length();
+                for (int i = index + 1; i < sql.length(); ++i) {
+                    char c = sql.charAt(i);
+                    if (isTerminator(c)) {
+                        endIndex = i;
+                        break;
+                    }
+                }
+
+                if (parameterIndex == collectionIndex) {
+                    buffer.append(sql, startIndex, index);
+                    String parameterName = parameterNames.get(parameterIndex);
+                    Collection<?> value = (Collection<?>) parameterSource.getValue(parameterName);
+                    addPlaceholders(buffer, value.size());
+                    if (collectionIterator.hasNext()) {
+                        collectionIndex = collectionIterator.next();
+                    }
+
+                } else {
+                    buffer.append(sql, startIndex, endIndex);
+                }
+
+                if (endIndex == sql.length()) {
+                    break;
+                } else if (parameterIndex == collectionIndex && !collectionIterator.hasNext()) {
+                    buffer.append(sql, endIndex, sql.length());
+                    break;
+                } else {
+                    startIndex = endIndex;
+                    parameterIndex += 1;
+                }
+            } else {
+                break;
+            }
+        }
+
+        return buffer.toString();
+    }
+
+    private void addPlaceholders(StringBuilder buffer, int count) {
+        for (int i = 0; i < count; ++i) {
+            if (i > 0) {
+                buffer.append(',');
+            }
+            buffer.append('?');
+        }
     }
 
     private Object[] flatten(Object[] values) {
@@ -88,10 +149,11 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
         return flat;
     }
 
-    private List<Integer> getCollectionIndices(Object[] values) {
+    private List<Integer> getCollectionIndices(List<String> parameterNames, SqlParameterSource parameterSource) {
         List<Integer> indices = null;
-        for (int i = 0; i < values.length; ++i) {
-            Object value = values[i];
+        for (int i = 0; i < parameterNames.size(); ++i) {
+            String parameterName = parameterNames.get(i);
+            Object value = parameterSource.getValue(parameterName);
             if (value instanceof Collection) {
                 if (indices == null) {
                     indices = new ArrayList<>(2);
@@ -107,7 +169,11 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
         }
     }
 
-    private List<String> findNames(String sql) {
+    private List<String> findParameterNames(String sql) {
+        // FIXME will fail for comments eg
+        // SELECT 1 FROM dual WHERE 1 = 1 -- and 2 = :one
+        // FIXME will fail for stirng litersl eg
+        // SELECT 1 FROM dual WHERE 2 != "2 = :one"
         List<String> names = new ArrayList<>();
         int startIndex = 0;
         while (startIndex >= 0) {
@@ -116,14 +182,14 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
                 int endIndex = sql.length();
                 for (int i = index + 1; i < sql.length(); ++i) {
                     char c = sql.charAt(i);
-                    if (Character.isWhitespace(c)) {
+                    if (isTerminator(c)) {
                         endIndex = i;
                         break;
                     }
                 }
                 if (endIndex < sql.length()) {
                     names.add(sql.substring(index + 1, endIndex));
-                    startIndex = endIndex;
+                    startIndex = endIndex + 1;
                 } else {
                     names.add(sql.substring(index + 1));
                     break;
@@ -133,6 +199,10 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
             }
         }
         return names;
+    }
+
+    private boolean isTerminator(char c) {
+        return c == ')' || Character.isWhitespace(c);
     }
 
 }
