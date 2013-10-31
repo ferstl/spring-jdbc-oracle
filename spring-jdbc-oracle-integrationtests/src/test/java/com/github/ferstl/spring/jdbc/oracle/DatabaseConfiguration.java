@@ -85,11 +85,6 @@ public class DatabaseConfiguration {
   }
 
   @Bean
-  public NamedParameterJdbcTemplate npJdbcTemplate() throws Exception {
-    return new NamedParameterJdbcTemplate(jdbcTemplate());
-  }
-
-  @Bean
   public NamedParameterJdbcTemplate namedParameterJdbcTemplate() throws Exception {
     return new NamedParameterJdbcTemplate(jdbcTemplate());
   }
