@@ -24,9 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.test.context.ActiveProfiles;
-
-import com.github.ferstl.spring.jdbc.oracle.dsconfig.DataSourceProfile;
 
 import static com.github.ferstl.spring.jdbc.oracle.RowCountMatcher.matchesRowCounts;
 import static org.junit.Assert.assertThat;
@@ -34,7 +31,6 @@ import static org.junit.Assert.assertThat;
 /**
  * Integration test that uses {@link NamedParameterJdbcTemplate}.
  */
-@ActiveProfiles(DataSourceProfile.SINGLE_CONNECTION)
 public abstract class AbstractNamedParameterIntegrationTest extends AbstractOracleJdbcTemplateIntegrationTest {
 
   private static final String DELETE_SQL = "DELETE FROM test_table t WHERE t.numval = :value";
