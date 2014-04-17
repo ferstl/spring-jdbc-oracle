@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 by Stefan Ferstl <st.ferstl@gmail.com>
+ * Copyright (c) 2014 by Philippe Marschall <philippe.marschall@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,21 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package oracle.jdbc;
-
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import oracle.sql.TIMESTAMPTZ;
+package oracle.sql;
 
 /**
- * Dummy {@code OraclePreparedStatement} interface which avoids a dependency to OJDBC.
+ * Dummy {@code TIMESTAMPTZ} interface which avoids a dependency to OJDBC.
  */
-public interface OraclePreparedStatement extends PreparedStatement {
+public class TIMESTAMPTZ {
 
-  void setExecuteBatch(int sendBatchSize) throws SQLException;
-  int getExecuteBatch();
-  int sendBatch() throws SQLException;
-  
-  void setTIMESTAMPTZ(int parameterIndex, TIMESTAMPTZ x) throws SQLException;
+  public byte[] toBytes() {
+    return new byte[0];
+  }
+
 }

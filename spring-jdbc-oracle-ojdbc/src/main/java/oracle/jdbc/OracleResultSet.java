@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 by Stefan Ferstl <st.ferstl@gmail.com>
+ * Copyright (c) 2014 by Philippe Marschall <philippe.marschall@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,16 @@
  */
 package oracle.jdbc;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.ResultSet;
 
 import oracle.sql.TIMESTAMPTZ;
 
 /**
- * Dummy {@code OraclePreparedStatement} interface which avoids a dependency to OJDBC.
+ * Dummy {@code OracleResultSet} interface which avoids a dependency to OJDBC.
  */
-public interface OraclePreparedStatement extends PreparedStatement {
+public interface OracleResultSet extends ResultSet {
 
-  void setExecuteBatch(int sendBatchSize) throws SQLException;
-  int getExecuteBatch();
-  int sendBatch() throws SQLException;
-  
-  void setTIMESTAMPTZ(int parameterIndex, TIMESTAMPTZ x) throws SQLException;
+  TIMESTAMPTZ getTIMESTAMPTZ(int columnIndex);
+  TIMESTAMPTZ getTIMESTAMPTZ(String columnName);
+
 }
