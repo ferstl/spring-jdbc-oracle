@@ -25,9 +25,18 @@ import oracle.sql.TIMESTAMPTZ;
  */
 public interface OraclePreparedStatement extends PreparedStatement {
 
+  // batch support
   void setExecuteBatch(int sendBatchSize) throws SQLException;
   int getExecuteBatch();
   int sendBatch() throws SQLException;
   
+  // named support
+  void setObjectAtName(String parameterName, Object value) throws SQLException;
+  void setObjectAtName(String parameterName, Object value, int targetSqlType) throws SQLException;
+  void setObjectAtName(String parameterName, Object value, int targetSqlType, int scale) throws SQLException;
+  void setNullAtName(String parameterName, int sqlType) throws SQLException;
+  void setNullAtName(String parameterName, int sqlType, String sqlName) throws SQLException;
+  
+  // timestamptz support
   void setTIMESTAMPTZ(int parameterIndex, TIMESTAMPTZ x) throws SQLException;
 }

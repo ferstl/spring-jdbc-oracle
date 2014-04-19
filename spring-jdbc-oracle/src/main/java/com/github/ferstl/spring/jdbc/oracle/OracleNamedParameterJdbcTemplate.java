@@ -15,22 +15,37 @@
  */
 package com.github.ferstl.spring.jdbc.oracle;
 
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import oracle.jdbc.OraclePreparedStatement;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.PreparedStatementCreator;
-import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
-import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSourceUtils;
 
 /**
  * A subclass of Spring's {@link NamedParameterJdbcTemplate} the uses
  * Oracle named parameter support to avoid building a new query.
+ * <h3>Limitations</h3>
+ * <ul>
+ * <li>
+ * currently only works with
+ * {@link org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource}
+ * and
+ * {@link org.springframework.jdbc.core.namedparam.MapSqlParameterSource}
+ * but thats a limitation in {@link SqlParameterSourceUtils}
+ * </li>
+ * <li>does not support collections</li>
+ * <ul>
  */
 public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTemplate {
 
@@ -45,164 +60,64 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
 
   @Override
   protected PreparedStatementCreator getPreparedStatementCreator(String sql, SqlParameterSource parameterSource) {
-    List<String> parameterNames = findParameterNames(sql);
-    List<SqlParameter> parameters = new ArrayList<>(parameterNames.size());
-    Object[] values = new Object[parameterNames.size()];
-
-    List<Integer> collectionIndices = getCollectionIndices(parameterNames, parameterSource);
-    if (!collectionIndices.isEmpty()) {
-      values = flatten(values);
-      sql = expandCollectionPlaceholders(sql, collectionIndices, parameterNames, parameterSource);
-    }
-
-    int i = 0;
-    for (String parameterName : parameterNames) {
-      int sqlType = parameterSource.getSqlType(parameterName);
-      String typeName = parameterSource.getTypeName(parameterName);
-      SqlParameter parameter = new SqlParameter(sqlType, typeName);
-      parameters.add(parameter);
-      values[i++] = parameterSource.getValue(parameterName);
-    }
-    PreparedStatementCreatorFactory pscf = new PreparedStatementCreatorFactory(sql, parameters);
-    return pscf.newPreparedStatementCreator(values);
+    return new NamedPreparedStatementCreator(sql, parameterSource);
   }
+  
+  static final class NamedPreparedStatementCreator implements PreparedStatementCreator {
+    
+    private final String sql;
+    private final SqlParameterSource parameterSource;
+    
+    NamedPreparedStatementCreator(String sql, SqlParameterSource parameterSource) {
+      this.sql = sql;
+      this.parameterSource = parameterSource;
+    }
 
-  private String expandCollectionPlaceholders(String sql, List<Integer> collectionIndices, List<String> parameterNames, SqlParameterSource parameterSource) {
-    StringBuilder buffer = new StringBuilder((int) (sql.length() * 1.1));
-    Iterator<Integer> collectionIterator = collectionIndices.iterator();
-    int collectionIndex = collectionIterator.next();
-
-    int startIndex = 0;
-    int parameterIndex = 0;
-    while (startIndex >= 0) {
-      int index = sql.indexOf(':', startIndex);
-      if (index >= 0) {
-        int endIndex = sql.length();
-        for (int i = index + 1; i < sql.length(); ++i) {
-          char c = sql.charAt(i);
-          if (isTerminator(c)) {
-            endIndex = i;
-            break;
+    @Override
+    public PreparedStatement createPreparedStatement(Connection connection) throws SQLException {
+      PreparedStatement wrapped = connection.prepareStatement(sql);
+      OraclePreparedStatement statement = wrapped.unwrap(OraclePreparedStatement.class);
+      
+      for (String parameterName : this.getParameterNames()) {
+        int sqlType = this.parameterSource.getSqlType(parameterName);
+        Object value = this.parameterSource.getValue(parameterName);
+        if (sqlType != SqlParameterSource.TYPE_UNKNOWN) {
+          if (value != null) {
+            statement.setObjectAtName(parameterName, value, sqlType);
+          } else {
+            statement.setNullAtName(parameterName, sqlType);
+          }
+        } else {
+          if (value != null) {
+            statement.setObjectAtName(parameterName, value);
+          } else {
+            // REVIEW: not actually sure but there doesn't seem to be a
+            // setNullAtName without a type
+            // we can't do
+            // statement.getParameterMetaData().getParameterType(i)
+            // because that doesn't take names and
+            // OracleParameterMetaData doesn't add any additional methods
+            // it might not even be doable in an unambiguous way because
+            // a name can be used several times in a query for comparisons
+            // (or inserts) of columns of varying types
+            statement.setNullAtName(parameterName, Types.NULL);
           }
         }
-
-        if (parameterIndex == collectionIndex) {
-          buffer.append(sql, startIndex, index);
-          String parameterName = parameterNames.get(parameterIndex);
-          Collection<?> value = (Collection<?>) parameterSource.getValue(parameterName);
-          addPlaceholders(buffer, value.size());
-          if (collectionIterator.hasNext()) {
-            collectionIndex = collectionIterator.next();
-          }
-
-        } else {
-          buffer.append(sql, startIndex, endIndex);
-        }
-
-        if (endIndex == sql.length()) {
-          break;
-        } else if (parameterIndex == collectionIndex && !collectionIterator.hasNext()) {
-          buffer.append(sql, endIndex, sql.length());
-          break;
-        } else {
-          startIndex = endIndex;
-          parameterIndex += 1;
-        }
-      } else {
-        break;
       }
+      return wrapped;
     }
-
-    return buffer.toString();
+    
+    private Collection<String> getParameterNames() {
+      Map<?, ?> insensitiveParameterNames = SqlParameterSourceUtils.extractCaseInsensitiveParameterNames(parameterSource);
+      Set<String> parameterNames = new HashSet<>(insensitiveParameterNames.size());
+      for (Object each : insensitiveParameterNames.values()) {
+        parameterNames.add((String) each);
+      }
+      return parameterNames;
+    }
+    
   }
 
-  private void addPlaceholders(StringBuilder buffer, int count) {
-    for (int i = 0; i < count; ++i) {
-      if (i > 0) {
-        buffer.append(',');
-      }
-      buffer.append('?');
-    }
-  }
 
-  private Object[] flatten(Object[] values) {
-    int size = 0;
-    for (Object value : values) {
-      if (value instanceof Collection) {
-        size += ((Collection<?>) value).size();
-      } else {
-        size += 1;
-      }
-    }
-    Object[] flat = new Object[size];
-    int i = 0;
-    for (Object value : values) {
-      if (value instanceof Collection) {
-        for (Object inner : (Collection<?>) value) {
-          flat[i++] = inner;
-        }
-      } else {
-        flat[i++] = value;
-      }
-    }
-
-    return flat;
-  }
-
-  private List<Integer> getCollectionIndices(List<String> parameterNames, SqlParameterSource parameterSource) {
-    List<Integer> indices = null;
-    for (int i = 0; i < parameterNames.size(); ++i) {
-      String parameterName = parameterNames.get(i);
-      Object value = parameterSource.getValue(parameterName);
-      if (value instanceof Collection) {
-        if (indices == null) {
-          indices = new ArrayList<>(2);
-        }
-        indices.add(i);
-      }
-    }
-
-    if (indices != null) {
-      return indices;
-    } else {
-      return Collections.emptyList();
-    }
-  }
-
-  private List<String> findParameterNames(String sql) {
-    // FIXME will fail for comments eg
-    // SELECT 1 FROM dual WHERE 1 = 1 -- and 2 = :one
-    // FIXME will fail for stirng litersl eg
-    // SELECT 1 FROM dual WHERE 2 != "2 = :one"
-    List<String> names = new ArrayList<>();
-    int startIndex = 0;
-    while (startIndex >= 0) {
-      int index = sql.indexOf(':', startIndex);
-      if (index >= 0) {
-        int endIndex = sql.length();
-        for (int i = index + 1; i < sql.length(); ++i) {
-          char c = sql.charAt(i);
-          if (isTerminator(c)) {
-            endIndex = i;
-            break;
-          }
-        }
-        if (endIndex < sql.length()) {
-          names.add(sql.substring(index + 1, endIndex));
-          startIndex = endIndex + 1;
-        } else {
-          names.add(sql.substring(index + 1));
-          break;
-        }
-      } else {
-        break;
-      }
-    }
-    return names;
-  }
-
-  private boolean isTerminator(char c) {
-    return c == ')' || Character.isWhitespace(c);
-  }
 
 }

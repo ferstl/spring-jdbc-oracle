@@ -15,22 +15,26 @@
  */
 package com.github.ferstl.spring.jdbc.oracle;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import oracle.jdbc.OraclePreparedStatement;
+
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * JUnit tests for {@link OracleNamedParameterJdbcTemplate}.
@@ -48,7 +52,6 @@ public class OracleNamedParameterJdbcTemplateTest {
   @Test
   public void endingNoSpace() throws SQLException {
     Map<String, Object> map = new HashMap<>(3);
-    map.put("one", 1);
     map.put("ten", 10);
     map.put("twenty", 20);
     String sql = "SELECT 1 FROM dual WHERE 1 = :ten or 20 = :twenty";
@@ -57,19 +60,64 @@ public class OracleNamedParameterJdbcTemplateTest {
 
     Connection connection = mock(Connection.class);
     PreparedStatement preparedStatement = mock(PreparedStatement.class);
+    OraclePreparedStatement oracleStatement = mock(OraclePreparedStatement.class);
 
     when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
+    when(preparedStatement.unwrap(OraclePreparedStatement.class)).thenReturn(oracleStatement);
 
     preparedStatementCreator.createPreparedStatement(connection);
 
-    verify(preparedStatement).setObject(1, 10);
-    verify(preparedStatement).setObject(2, 20);
+    verify(oracleStatement).setObjectAtName("ten", 10);
+    verify(oracleStatement).setObjectAtName("twenty", 20);
+  }
+  
+  @Test
+  public void setNullNoType() throws SQLException {
+    Map<String, Object> map = new HashMap<>(2);
+    map.put("ten", 10);
+    map.put("twenty", null);
+    String sql = "SELECT 1 FROM dual WHERE 1 = :ten or 20 = :twenty";
+    PreparedStatementCreator preparedStatementCreator = this.namedJdbcTemplate.getPreparedStatementCreator(
+        sql, new MapSqlParameterSource(map));
+    
+    Connection connection = mock(Connection.class);
+    PreparedStatement preparedStatement = mock(PreparedStatement.class);
+    OraclePreparedStatement oracleStatement = mock(OraclePreparedStatement.class);
+    
+    when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
+    when(preparedStatement.unwrap(OraclePreparedStatement.class)).thenReturn(oracleStatement);
+    
+    preparedStatementCreator.createPreparedStatement(connection);
+    
+    verify(oracleStatement).setObjectAtName("ten", 10);
+    verify(oracleStatement).setNullAtName("twenty", Types.NULL);
+  }
+  
+  @Test
+  public void setWithType() throws SQLException {
+    MapSqlParameterSource source = new MapSqlParameterSource(new HashMap<String, Object>(2));
+    source.addValue("ten", 10, Types.NUMERIC);
+    source.addValue("twenty", null, Types.VARCHAR);
+    String sql = "SELECT 1 FROM dual WHERE 1 = :ten or 20 = :twenty";
+    PreparedStatementCreator preparedStatementCreator = this.namedJdbcTemplate.getPreparedStatementCreator(
+        sql, source);
+    
+    Connection connection = mock(Connection.class);
+    PreparedStatement preparedStatement = mock(PreparedStatement.class);
+    OraclePreparedStatement oracleStatement = mock(OraclePreparedStatement.class);
+    
+    when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
+    when(preparedStatement.unwrap(OraclePreparedStatement.class)).thenReturn(oracleStatement);
+    
+    preparedStatementCreator.createPreparedStatement(connection);
+    
+    verify(oracleStatement).setObjectAtName("ten", 10, Types.NUMERIC);
+    verify(oracleStatement).setNullAtName("twenty", Types.VARCHAR);
   }
 
   @Test
   public void endingWithSpace() throws SQLException {
     Map<String, Object> map = new HashMap<>(3);
-    map.put("one", 1);
     map.put("ten", 10);
     map.put("twenty", 20);
     String sql = "SELECT 1 FROM dual WHERE 10 = :ten or 20 = :twenty ";
@@ -78,34 +126,35 @@ public class OracleNamedParameterJdbcTemplateTest {
 
     Connection connection = mock(Connection.class);
     PreparedStatement preparedStatement = mock(PreparedStatement.class);
+    OraclePreparedStatement oracleStatement = mock(OraclePreparedStatement.class);
 
     when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
+    when(preparedStatement.unwrap(OraclePreparedStatement.class)).thenReturn(oracleStatement);
 
     preparedStatementCreator.createPreparedStatement(connection);
 
-    verify(preparedStatement).setObject(1, 10);
-    verify(preparedStatement).setObject(2, 20);
+    verify(oracleStatement).setObjectAtName("ten", 10);
+    verify(oracleStatement).setObjectAtName("twenty", 20);
   }
 
   @Test
   public void repetition() throws SQLException {
     Map<String, Object> map = new HashMap<>(3);
-    map.put("one", 1);
     map.put("ten", 10);
-    map.put("twenty", 20);
     String sql = "SELECT 1 FROM dual WHERE 10 = :ten or 0 < :ten ";
     PreparedStatementCreator preparedStatementCreator = this.namedJdbcTemplate.getPreparedStatementCreator(
       sql, new MapSqlParameterSource(map));
 
     Connection connection = mock(Connection.class);
     PreparedStatement preparedStatement = mock(PreparedStatement.class);
+    OraclePreparedStatement oracleStatement = mock(OraclePreparedStatement.class);
 
     when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
+    when(preparedStatement.unwrap(OraclePreparedStatement.class)).thenReturn(oracleStatement);
 
     preparedStatementCreator.createPreparedStatement(connection);
 
-    verify(preparedStatement).setObject(1, 10);
-    verify(preparedStatement).setObject(2, 10);
+    verify(oracleStatement).setObjectAtName("ten", 10);
   }
 
   @Test
@@ -119,16 +168,19 @@ public class OracleNamedParameterJdbcTemplateTest {
 
     Connection connection = mock(Connection.class);
     PreparedStatement preparedStatement = mock(PreparedStatement.class);
+    OraclePreparedStatement oracleStatement = mock(OraclePreparedStatement.class);
 
     when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
+    when(preparedStatement.unwrap(OraclePreparedStatement.class)).thenReturn(oracleStatement);
 
     preparedStatementCreator.createPreparedStatement(connection);
 
-    verify(preparedStatement).setObject(1, 10);
-    verify(preparedStatement).setObject(2, 20);
+    verify(oracleStatement).setObjectAtName("arg", 10);
+    verify(oracleStatement).setObjectAtName("arg2", 20);
   }
 
   @Test
+  @Ignore("unsupported")
   public void collection() throws SQLException {
     Map<String, Object> map = new HashMap<>(3);
     map.put("ten", 10);
@@ -155,6 +207,7 @@ public class OracleNamedParameterJdbcTemplateTest {
   }
 
   @Test
+  @Ignore("unsupported")
   public void endsWithCollection() throws SQLException {
     Map<String, Object> map = new HashMap<>(3);
     map.put("ten", 10);
@@ -180,6 +233,7 @@ public class OracleNamedParameterJdbcTemplateTest {
   }
 
   @Test
+  @Ignore("unsupported")
   public void endsWithCollectionSpace() throws SQLException {
     Map<String, Object> map = new HashMap<>(3);
     map.put("ten", 10);

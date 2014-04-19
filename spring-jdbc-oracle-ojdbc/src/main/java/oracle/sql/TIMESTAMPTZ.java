@@ -19,6 +19,10 @@ package oracle.sql;
  * Dummy {@code TIMESTAMPTZ} interface which avoids a dependency to OJDBC.
  */
 public class TIMESTAMPTZ {
+  
+  public TIMESTAMPTZ(byte[] timestamptz) {
+    super();
+  }
 
   public byte[] toBytes() {
     return new byte[0];
