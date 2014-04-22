@@ -13,7 +13,7 @@
     <!-- Dependency versions (only used in this module). -->
     <ojdbc6.version>11.2.0.3.0</ojdbc6.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
-    <tomcat-jdbc.version>7.0.40</tomcat-jdbc.version>
+    <tomcat-jdbc.version>8.0.5</tomcat-jdbc.version>
     
     <!-- Build properties. -->
     <main.basedir>${project.parent.basedir}</main.basedir>
