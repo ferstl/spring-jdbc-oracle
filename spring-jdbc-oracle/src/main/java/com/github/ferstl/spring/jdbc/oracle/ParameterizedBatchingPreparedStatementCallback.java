@@ -55,7 +55,7 @@ class ParameterizedBatchingPreparedStatementCallback<T> implements PreparedState
 
   @Override
   public int[][] doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-    OraclePreparedStatement ops = (OraclePreparedStatement) ps;
+    OraclePreparedStatement ops = ps.unwrap(OraclePreparedStatement.class);
 
     List<int[]> rowCounts = new ArrayList<>();
     for (int i = 0; i < this.batchArgs.size(); i += this.sendBatchSize) {

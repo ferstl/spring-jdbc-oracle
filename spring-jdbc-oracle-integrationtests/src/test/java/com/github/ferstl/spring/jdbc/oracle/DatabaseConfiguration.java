@@ -32,8 +32,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.jdbc.support.nativejdbc.NativeJdbcExtractor;
-import org.springframework.jdbc.support.nativejdbc.OracleJdbc4NativeJdbcExtractor;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -70,7 +68,6 @@ public class DatabaseConfiguration {
     prepareDatabase();
 
     JdbcTemplate jdbcTemplate = new OracleJdbcTemplate(this.env.getProperty("db.batchsize", Integer.class), this.dataSource);
-    jdbcTemplate.setNativeJdbcExtractor(nativeJdbcExtractor());
     initDatabase(jdbcTemplate);
 
     return jdbcTemplate;
@@ -79,7 +76,6 @@ public class DatabaseConfiguration {
   @Bean
   public JdbcTemplate classicJdbcTemplate() {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(this.dataSource);
-    jdbcTemplate.setNativeJdbcExtractor(nativeJdbcExtractor());
 
     return jdbcTemplate;
   }
@@ -92,11 +88,6 @@ public class DatabaseConfiguration {
   @Bean
   public OracleNamedParameterJdbcTemplate onpJdbcTemplate() throws Exception {
     return new OracleNamedParameterJdbcTemplate(jdbcTemplate());
-  }
-
-  @Bean
-  NativeJdbcExtractor nativeJdbcExtractor() {
-    return new OracleJdbc4NativeJdbcExtractor();
   }
 
   @Bean

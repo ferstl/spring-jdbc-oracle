@@ -47,7 +47,7 @@ class BatchingPreparedStatementCallback implements PreparedStatementCallback<int
 
   @Override
   public int[] doInPreparedStatement(PreparedStatement ps) throws SQLException, DataAccessException {
-    OraclePreparedStatement ops = (OraclePreparedStatement) ps;
+    OraclePreparedStatement ops = ps.unwrap(OraclePreparedStatement.class);
     int batchSize = this.pss.getBatchSize();
 
     // Don't use an int[] array here because instances of InterruptibleBatchPreparedStatementSetter

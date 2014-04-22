@@ -21,9 +21,9 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import oracle.jdbc.OraclePreparedStatement;
-
 import org.mockito.Matchers;
+
+import oracle.jdbc.OraclePreparedStatement;
 
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -47,6 +47,7 @@ public class OracleJdbcGuru {
       when(ops.getExecuteBatch()).thenCallRealMethod();
       when(ops.executeUpdate()).thenCallRealMethod();
       when(ops.sendBatch()).thenCallRealMethod();
+      when(ops.unwrap(OraclePreparedStatement.class)).thenReturn(ops);
     } catch (SQLException e) {
       throw new RuntimeException("Won't happen here.");
     }
