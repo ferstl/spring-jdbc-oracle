@@ -44,21 +44,14 @@ The `OracleJdbcTemplate` is a drop-in replacement for Spring's `JdbcTemplate` wh
     }
 
 #### Connection Pools
-In case you are using a connection pool like DBCP or the Tomcat pool, you need to set a `NativeJdbcExtractor` on the `OracleJdbcTemplate`. Otherwise you'll get a `ClassCastException` when calling one of the `batchUpdate()` methods.
+The `OracleJdbcTemplate` has been tested with these connection pools:
+* [Commons DBCP](http://commons.apache.org/proper/commons-dbcp/)
+* [Tomcat JDBC Connection Pool](https://tomcat.apache.org/tomcat-8.0-doc/jdbc-pool.html).
 
-    @Bean
-    DataSource dataSource() {
-      // Create your pooled DataSource for your Oracle DB.
-      // ...
-    }
 
-    @Bean
-    public JdbcTemplate jdbcTemplate() {
-      JdbcTemplate jdbcTemplate = new OracleJdbcTemplate(30, dataSource());
-      jdbcTemplate.setNativeJdbcExtractor(new OracleJdbc4NativeJdbcExtractor());
-      
-      return jdbcTemplate;
-    }
+Since version `1.0.0`, no special configuration has to be made when a connection pool is used. Versions prior to `1.0.0` have to set a `NativeJdbcExtractor` on the `OracleJdbcTemplate` in order to avoid `ClassCastException`s.
+
+There are also integratin tests working with these pools. See below for further details about running these tests.
 
 
 ### Project Layout
