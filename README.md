@@ -1,6 +1,8 @@
 # spring-jdbc-oracle
 *- A variant of Spring's JdbcTemplate that uses Oracle Update Batching*
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.ferstl/spring-jdbc-oracle/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.ferstl/spring-jdbc-oracle)
+
 If Spring's classic JdbcTemplate is used in combination with an Oracle DB, the `batchUpdate()` methods won't return the number of affected rows. Instead, these methods do always return an array containing -2 (`Statement#SUCCESS_NO_INFO`) in each element. In order to get the number of affected rows during a batch INSERT/UPDATE/DELETE, it is required to use [Oracle Update Batching](http://docs.oracle.com/cd/B28359_01/java.111/b31224/oraperf.htm#autoId2).
 
 This project contains a subclass of Spring's classic `JdbcTemplate` called `OracleJdbcTemplate` which overwrites the methods
