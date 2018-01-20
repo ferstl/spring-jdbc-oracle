@@ -32,7 +32,10 @@ import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
  * are processed as a whole, so it is not possible to find out the number of updated rows for each individual statement
  * in a batch. For example, if the batch size is set to 5 and a batch update containing 7 statements
  * (each of which updates exactly one row) is executed, the result will be {@code [0, 0, 0, 0, 5, 0, 2]}.
+ *
+ * @deprecated as of 12c the Oracle JDBC driver supports JDBC update batching and the proprietary API is deprecated
  */
+@Deprecated
 public class OracleJdbcTemplate extends JdbcTemplate {
 
   private final int sendBatchSize;
