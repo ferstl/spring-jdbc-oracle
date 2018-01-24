@@ -73,7 +73,7 @@
     <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
 
     <!-- Dependency versions -->
-    <springframework.version>4.3.5.RELEASE</springframework.version>
+    <springframework.version>5.0.3.RELEASE</springframework.version>
     <junit.version>4.12</junit.version>
     <hamcrest.version>2.0.0.0</hamcrest.version>
     <mockito.version>1.10.19</mockito.version>
@@ -160,8 +160,8 @@
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven-compiler-plugin.version}</version>
           <configuration>
-            <source>1.7</source>
-            <target>1.7</target>
+            <source>1.8</source>
+            <target>1.8</target>
           </configuration>
         </plugin>
 
@@ -196,7 +196,7 @@
           <configuration>
             <show>private</show>
             <links>
-              <link>http://static.springsource.org/spring/docs/3.2.x/javadoc-api/</link>
+              <link>https://docs.spring.io/spring-framework/docs/5.0.x/javadoc-api/</link>
             </links>
           </configuration>
         </plugin>
