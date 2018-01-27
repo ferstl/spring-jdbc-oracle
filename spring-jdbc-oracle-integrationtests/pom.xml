@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
@@ -8,13 +9,13 @@
   </parent>
 
   <artifactId>spring-jdbc-oracle-integrationtests</artifactId>
-  
+
   <properties>
     <!-- Dependency versions (only used in this module). -->
     <ojdbc6.version>11.2.0.3.0</ojdbc6.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
-    <tomcat-jdbc.version>8.0.17</tomcat-jdbc.version>
-    
+    <tomcat-jdbc.version>9.0.4</tomcat-jdbc.version>
+
     <!-- Build properties. -->
     <main.basedir>${project.parent.basedir}</main.basedir>
   </properties>
@@ -25,7 +26,7 @@
       <artifactId>spring-jdbc-oracle</artifactId>
       <version>${project.version}</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
@@ -34,7 +35,7 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-jdbc</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>com.oracle</groupId>
       <artifactId>ojdbc6</artifactId>
@@ -75,7 +76,7 @@
       <artifactId>spring-test</artifactId>
     </dependency>
   </dependencies>
-  
+
   <build>
     <plugins>
       <plugin>
