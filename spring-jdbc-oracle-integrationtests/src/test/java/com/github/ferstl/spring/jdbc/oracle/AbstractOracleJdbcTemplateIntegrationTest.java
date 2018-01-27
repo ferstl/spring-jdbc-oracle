@@ -23,7 +23,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -31,9 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
  * tests.
  */
 @ContextConfiguration(classes = DatabaseConfiguration.class)
-@TransactionConfiguration
 @Transactional
-@IfProfileValue(name = "testgroup", value="integration")
+@IfProfileValue(name = "testgroup", value = "integration")
 @RunWith(SpringJUnit4ClassRunner.class)
 public abstract class AbstractOracleJdbcTemplateIntegrationTest {
 
