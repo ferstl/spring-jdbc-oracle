@@ -18,15 +18,12 @@ package com.github.ferstl.spring.jdbc.oracle;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
 import javax.sql.DataSource;
-
-import org.mockito.Matchers;
-
+import org.mockito.ArgumentMatchers;
 import oracle.jdbc.OraclePreparedStatement;
 
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -63,8 +60,8 @@ public class OracleJdbcGuru {
     try {
       when(connection.prepareStatement(anyString())).thenReturn(ops);
       when(connection.prepareStatement(anyString(), anyInt())).thenReturn(ops);
-      when(connection.prepareStatement(anyString(), Matchers.<int[]>any())).thenReturn(ops);
-      when(connection.prepareStatement(anyString(), Matchers.<String[]>any())).thenReturn(ops);
+      when(connection.prepareStatement(anyString(), ArgumentMatchers.<int[]>any())).thenReturn(ops);
+      when(connection.prepareStatement(anyString(), ArgumentMatchers.<String[]>any())).thenReturn(ops);
       when(connection.prepareStatement(anyString(), anyInt(), anyInt())).thenReturn(ops);
       when(connection.prepareStatement(anyString(), anyInt(), anyInt(), anyInt())).thenReturn(ops);
 
@@ -84,6 +81,7 @@ public class OracleJdbcGuru {
    * Abstract implementation of an {@link OraclePreparedStatement} that simulates the batch update logic.
    */
   static abstract class OraclePreparedStatementStub implements OraclePreparedStatement {
+
     int sendBatchSize;
     int updateCount;
 

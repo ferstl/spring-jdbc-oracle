@@ -16,19 +16,17 @@
 package com.github.ferstl.spring.jdbc.oracle;
 
 import java.sql.SQLException;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.InterruptibleBatchPreparedStatementSetter;
-
 import oracle.jdbc.OraclePreparedStatement;
 
 import static com.github.ferstl.spring.jdbc.oracle.RowCountMatcher.matchesRowCounts;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -109,12 +107,12 @@ public class BatchingPreparedStatementCallbackTest {
     verifyPreparedStatementCalls(pssBatchSize, pss);
   }
 
-  private void doInPreparedStatementWithIpss(int sendBatchSize, final int effectiveBatchSize, int pssBatchSize)
-  throws SQLException {
+  private void doInPreparedStatementWithIpss(int sendBatchSize, final int effectiveBatchSize, int pssBatchSize) throws SQLException {
 
     InterruptibleBatchPreparedStatementSetter ipss = mock(InterruptibleBatchPreparedStatementSetter.class);
     when(ipss.getBatchSize()).thenReturn(pssBatchSize);
     when(ipss.isBatchExhausted(anyInt())).thenAnswer(new Answer<Boolean>() {
+
       @Override
       public Boolean answer(InvocationOnMock invocation) throws Throwable {
         return effectiveBatchSize <= (int) invocation.getArguments()[0];
