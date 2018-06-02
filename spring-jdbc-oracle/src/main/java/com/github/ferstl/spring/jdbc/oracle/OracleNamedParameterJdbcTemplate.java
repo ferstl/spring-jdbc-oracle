@@ -26,6 +26,7 @@ import javax.sql.DataSource;
 
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.ParameterDisposer;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.SqlProvider;
@@ -34,6 +35,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.ParsedSql;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.jdbc.support.SqlValue;
 import org.springframework.lang.Nullable;
 
 import oracle.jdbc.OraclePreparedStatement;
@@ -44,8 +46,10 @@ import oracle.jdbc.OraclePreparedStatement;
  * 
  * <h3>Limitations</h3>
  * <ul>
- * <li>does not support collections</li>
- * <li>does not support {@link SqlTypeValue}s</li>
+ * <li>does not support {@link SqlValue}, instead {@link NamedSqlValue} has to be used</li>
+ * <li>does not support collections, instead arrays with a {@link SqlOracleArrayValue}
+ *     or similar have to be used</li>
+ * <li>does not support {@link SqlTypeValue}</li>
  * <li>does not support binding {@link java.util.Calendar}</li>
  * <ul>
  */
@@ -117,7 +121,7 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
   /**
    * Binds named parameters using proprietary Oracle methods.
    */
-  static final class NamedPreparedStatementCreator implements PreparedStatementCreator, PreparedStatementSetter, SqlProvider {
+  static final class NamedPreparedStatementCreator implements PreparedStatementCreator, PreparedStatementSetter, SqlProvider, ParameterDisposer {
 
     private final String sql;
     private final SqlParameterSource parameterSource;
@@ -179,9 +183,13 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
     }
 
     private static void validateValue(Object value) {
+      if (value instanceof SqlValue && !(value instanceof NamedSqlValue)) {
+        // SqlValue does not support binding by name
+        throw new IllegalArgumentException("SqlValue not supported, use NamedSqlValue");
+      }
       if (value instanceof SqlTypeValue) {
         // SqlTypeValue does not support binding by name
-        throw new IllegalArgumentException("SqlTypeValue not supported");
+        throw new IllegalArgumentException("SqlTypeValue not supported, use NamedSqlValue");
       }
       if (value instanceof Collection) {
         // ojdbc does not support binding Collection
@@ -190,11 +198,16 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
     }
 
     private static void setValue(OraclePreparedStatement oracleStatement, String parameterName, Object value, int sqlType) throws SQLException {
-      Object bindParameter = convertToBindable(value);
-      if (sqlType != SqlParameterSource.TYPE_UNKNOWN) {
-        oracleStatement.setObjectAtName(parameterName, bindParameter, sqlType);
+      if (value instanceof NamedSqlValue) {
+        NamedSqlValue sqlValue = (NamedSqlValue) value;
+        sqlValue.setValue(oracleStatement, parameterName);
       } else {
-        oracleStatement.setObjectAtName(parameterName, bindParameter);
+        Object bindParameter = convertToBindable(value);
+        if (sqlType != SqlParameterSource.TYPE_UNKNOWN) {
+          oracleStatement.setObjectAtName(parameterName, bindParameter, sqlType);
+        } else {
+          oracleStatement.setObjectAtName(parameterName, bindParameter);
+        }
       }
     }
 
@@ -264,6 +277,16 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
     @Override
     public String getSql() {
       return this.sql;
+    }
+
+    @Override
+    public void cleanupParameters() {
+      for (String parameterName : this.parameterSource.getParameterNames()) {
+        Object value = this.parameterSource.getValue(parameterName);
+        if (value instanceof SqlValue) {
+          ((SqlValue) value).cleanup();
+        }
+      }
     }
 
   }
