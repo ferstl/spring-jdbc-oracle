@@ -15,6 +15,7 @@
  */
 package oracle.jdbc;
 
+import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -29,14 +30,15 @@ public interface OraclePreparedStatement extends PreparedStatement {
   void setExecuteBatch(int sendBatchSize) throws SQLException;
   int getExecuteBatch();
   int sendBatch() throws SQLException;
-  
+
   // named support
   void setObjectAtName(String parameterName, Object value) throws SQLException;
   void setObjectAtName(String parameterName, Object value, int targetSqlType) throws SQLException;
   void setObjectAtName(String parameterName, Object value, int targetSqlType, int scale) throws SQLException;
   void setNullAtName(String parameterName, int sqlType) throws SQLException;
   void setNullAtName(String parameterName, int sqlType, String sqlName) throws SQLException;
-  
+  void setArrayAtName(String parameterName, Array value) throws SQLException;
+
   // timestamptz support
   void setTIMESTAMPTZ(int parameterIndex, TIMESTAMPTZ x) throws SQLException;
 }
