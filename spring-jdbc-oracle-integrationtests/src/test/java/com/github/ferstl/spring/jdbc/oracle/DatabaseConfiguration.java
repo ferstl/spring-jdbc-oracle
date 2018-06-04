@@ -64,16 +64,6 @@ public class DatabaseConfiguration {
   private Environment env;
 
   @Bean
-  public JdbcTemplate jdbcTemplate() throws Exception {
-    prepareDatabase();
-
-    JdbcTemplate jdbcTemplate = new OracleJdbcTemplate(this.env.getProperty("db.batchsize", Integer.class), this.dataSource);
-    initDatabase(jdbcTemplate);
-
-    return jdbcTemplate;
-  }
-
-  @Bean
   public JdbcTemplate classicJdbcTemplate() {
     JdbcTemplate jdbcTemplate = new JdbcTemplate(this.dataSource);
 
@@ -100,7 +90,7 @@ public class DatabaseConfiguration {
     populator.addScript(new ClassPathResource("prepare-database.sql"));
     populator.setIgnoreFailedDrops(true);
 
-    TransactionTemplate trxTemplate = new TransactionTemplate(transactionManager());
+    TransactionTemplate trxTemplate = new TransactionTemplate(this.transactionManager());
     trxTemplate.execute(new TransactionCallback<Void>() {
 
       @Override
@@ -112,7 +102,7 @@ public class DatabaseConfiguration {
   }
 
   private void initDatabase(final JdbcTemplate jdbcTemplate) {
-    TransactionTemplate trxTemplate = new TransactionTemplate(transactionManager());
+    TransactionTemplate trxTemplate = new TransactionTemplate(this.transactionManager());
     trxTemplate.execute(new TransactionCallback<int[]>() {
 
       @Override
