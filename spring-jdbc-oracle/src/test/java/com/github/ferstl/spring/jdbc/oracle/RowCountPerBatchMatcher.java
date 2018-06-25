@@ -15,6 +15,7 @@
  */
 package com.github.ferstl.spring.jdbc.oracle;
 
+import java.util.stream.IntStream;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -43,15 +44,13 @@ public class RowCountPerBatchMatcher extends TypeSafeMatcher<int[][]> {
 
     // Complete batches
     for (int i = 0; i < numberOfBatches - 1; i++) {
-      int[] rowCountsInBatch = new int[batchSize];
-      rowCountsInBatch[batchSize - 1] = batchSize;
+      int[] rowCountsInBatch = IntStream.generate(() -> 1).limit(batchSize).toArray();
       this.expectedRowCounts[i] = rowCountsInBatch;
     }
 
     // Last possibly incomplete batch
     if (sizeOfLastBatch != 0) {
-      int[] rowCountsLastBatch = new int[sizeOfLastBatch];
-      rowCountsLastBatch[sizeOfLastBatch - 1] = sizeOfLastBatch;
+      int[] rowCountsLastBatch = IntStream.generate(() -> 1).limit(sizeOfLastBatch).toArray();
       this.expectedRowCounts[this.expectedRowCounts.length - 1] = rowCountsLastBatch;
     }
   }
