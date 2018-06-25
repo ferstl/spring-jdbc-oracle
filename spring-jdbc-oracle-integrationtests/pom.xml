@@ -12,7 +12,7 @@
 
   <properties>
     <!-- Dependency versions (only used in this module). -->
-    <ojdbc6.version>11.2.0.3.0</ojdbc6.version>
+    <ojdbc8.version>12.2.0.1</ojdbc8.version>
     <commons-dbcp.version>1.4</commons-dbcp.version>
     <tomcat-jdbc.version>9.0.4</tomcat-jdbc.version>
 
@@ -38,8 +38,8 @@
 
     <dependency>
       <groupId>com.oracle</groupId>
-      <artifactId>ojdbc6</artifactId>
-      <version>${ojdbc6.version}</version>
+      <artifactId>ojdbc8</artifactId>
+      <version>${ojdbc8.version}</version>
     </dependency>
     <dependency>
       <groupId>commons-dbcp</groupId>
