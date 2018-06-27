@@ -61,7 +61,7 @@ public abstract class AbstractOracleNamedParameterIntegrationTest extends Abstra
 
   @Test
   public void inlists() {
-    Map<String, Object> map = Collections.singletonMap("ids", new SqlOracleArrayValue("test_array_type", 1, 2, 3));
+    Map<String, Object> map = Collections.singletonMap("ids", new SqlOracleArrayValue("TEST_ARRAY_TYPE", 1, 2, 3));
     List<String> values = this.onpJdbcTemplate.query("SELECT val "
             + "FROM test_table "
             // 18c syntax
@@ -69,7 +69,8 @@ public abstract class AbstractOracleNamedParameterIntegrationTest extends Abstra
             + "WHERE id = ANY(select column_value from table(:ids))",
         new MapSqlParameterSource(map),
         (rs, i) -> rs.getString(1));
-    assertEquals(Arrays.asList("Value_00001", "Value_00002", "Value_00003"), values);
+
+    assertEquals(Arrays.asList("Value_00002", "Value_00003", "Value_00004"), values);
   }
 
   private static Map<String, Object>[] createArgMaps(int nrOfRows) {
