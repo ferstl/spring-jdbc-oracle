@@ -62,7 +62,7 @@ public abstract class AbstractNamedParameterIntegrationTest extends AbstractOrac
     Map<String, Object>[] args = new Map[nrOfRows];
 
     for (int i = 0; i < nrOfRows; i++) {
-      args[i] = Collections.<String, Object>singletonMap("value", i + 1);
+      args[i] = Collections.singletonMap("value", i + 1);
     }
 
     return args;

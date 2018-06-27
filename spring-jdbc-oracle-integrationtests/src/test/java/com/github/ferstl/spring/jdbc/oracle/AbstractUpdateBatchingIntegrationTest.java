@@ -77,7 +77,7 @@ public abstract class AbstractUpdateBatchingIntegrationTest extends AbstractOrac
 
   @Test
   public void updateWithEmptyArgList() {
-    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, Collections.<Object[]>emptyList());
+    int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, Collections.emptyList());
 
     assertEquals(0, result.length);
     verifyUpdates(0);
@@ -176,7 +176,7 @@ public abstract class AbstractUpdateBatchingIntegrationTest extends AbstractOrac
     int customBatchSize = this.batchSize - 3;
 
     int[][] result = this.jdbcTemplate.batchUpdate(
-        SINGLE_ROW_SQL, Collections.<int[]>emptyList(), customBatchSize, new TestParameterizedPreparedStatementSetter());
+        SINGLE_ROW_SQL, Collections.emptyList(), customBatchSize, new TestParameterizedPreparedStatementSetter());
 
     assertThat(result, matchesBatchedRowCounts(customBatchSize, 0));
     verifyUpdates(0);

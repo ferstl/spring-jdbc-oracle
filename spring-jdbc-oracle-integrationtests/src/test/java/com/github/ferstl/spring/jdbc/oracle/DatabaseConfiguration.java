@@ -30,7 +30,6 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -76,23 +75,19 @@ public class DatabaseConfiguration {
     return new DataSourceTransactionManager(dataSource);
   }
 
-  private void prepareDatabase(DataSource dataSource, PlatformTransactionManager transactionManager) {
+  private static void prepareDatabase(DataSource dataSource, PlatformTransactionManager transactionManager) {
     ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
     populator.addScript(new ClassPathResource("prepare-database.sql"));
     populator.setIgnoreFailedDrops(true);
 
     TransactionTemplate trxTemplate = new TransactionTemplate(transactionManager);
-    trxTemplate.execute(new TransactionCallback<Void>() {
-
-      @Override
-      public Void doInTransaction(TransactionStatus status) {
-        DatabasePopulatorUtils.execute(populator, dataSource);
-        return null;
-      }
+    trxTemplate.execute((TransactionCallback<Void>) status -> {
+      DatabasePopulatorUtils.execute(populator, dataSource);
+      return null;
     });
   }
 
-  private void initDatabase(JdbcTemplate jdbcTemplate, PlatformTransactionManager transactionManager) {
+  private static void initDatabase(JdbcTemplate jdbcTemplate, PlatformTransactionManager transactionManager) {
     TransactionTemplate trxTemplate = new TransactionTemplate(transactionManager);
     trxTemplate.execute(status -> {
       List<Object[]> batchArgs = new ArrayList<>(NUMBER_OF_ROWS);

@@ -35,8 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 public abstract class AbstractOracleJdbcTemplateIntegrationTest {
 
   @Value("${db.batchsize}")
-  int batchSize;
+  protected int batchSize;
 
   @Autowired
-  JdbcTemplate jdbcTemplate;
+  protected JdbcTemplate jdbcTemplate;
 }
