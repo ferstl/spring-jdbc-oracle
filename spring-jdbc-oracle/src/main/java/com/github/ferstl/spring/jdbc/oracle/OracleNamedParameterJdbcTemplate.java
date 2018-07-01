@@ -21,9 +21,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Objects;
-
 import javax.sql.DataSource;
-
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.ParameterDisposer;
@@ -37,28 +35,26 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.SqlValue;
 import org.springframework.lang.Nullable;
-
 import oracle.jdbc.OraclePreparedStatement;
 
 /**
  * A subclass of Spring's {@link NamedParameterJdbcTemplate} the uses
  * Oracle named parameter to avoid parsing building a new query.
- * 
  * <h3>Limitations</h3>
  * <ul>
  * <li>does not support {@link SqlValue}, instead {@link NamedSqlValue} has to be used</li>
  * <li>does not support collections, instead arrays with a {@link SqlOracleArrayValue}
- *     or similar have to be used</li>
+ * or similar have to be used</li>
  * <li>does not support {@link SqlTypeValue}</li>
  * <li>does not support binding {@link java.util.Calendar}</li>
- * <ul>
+ * </ul>
  */
 public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTemplate {
 
   /**
    * Create a new NamedParameterJdbcTemplate for the given {@link DataSource}.
    * <p>Creates a classic Spring {@link org.springframework.jdbc.core.JdbcTemplate} and wraps it.
-   * 
+   *
    * @param dataSource the JDBC DataSource to access
    */
   public OracleNamedParameterJdbcTemplate(DataSource dataSource) {
@@ -68,7 +64,7 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
   /**
    * Create a new NamedParameterJdbcTemplate for the given classic
    * Spring {@link org.springframework.jdbc.core.JdbcTemplate}.
-   * 
+   *
    * @param classicJdbcTemplate the classic Spring JdbcTemplate to wrap
    */
   public OracleNamedParameterJdbcTemplate(JdbcOperations classicJdbcTemplate) {
@@ -215,7 +211,7 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
      * OJDBC does not support binding common Java types most notably
      * {@link java.util.Date} this method converts some of the to
      * bindable types.
-     * 
+     *
      * @param object the object to bind with may need conversion
      * @return an equivalent value that hopefully ojdbc support
      * @see org.springframework.jdbc.core.StatementCreatorUtils#setValue(PreparedStatement, int, int, String, Integer, Object)
@@ -231,9 +227,10 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
     /**
      * Converts a {@link java.util.Date} that is not a java.sql type
      * to a {@link java.sql.Timestamp}.
-     * 
+     *
      * @param date the date to convert, not null
-     * @see org.springframework.jdbc.core.StatementCreatorUtils#isDateValue(Class<?>)
+     * @return The SQL Timestamp.
+     * @see org.springframework.jdbc.core.StatementCreatorUtils#isDateValue(Class)
      */
     private static Object convertToSqlTemporal(java.util.Date date) {
       if (date instanceof java.sql.Date) {
@@ -261,7 +258,7 @@ public final class OracleNamedParameterJdbcTemplate extends NamedParameterJdbcTe
       } else {
         // REVIEW: I'm not actually sure if Types.NULL is the correct type for
         // null but there doesn't seem to be a setNullAtName without a type.
-        // 
+        //
         // We can't call
         // statement.getParameterMetaData().getParameterType(i)
         // because that doesn't take names and

@@ -15,41 +15,35 @@
  */
 package com.github.ferstl.spring.jdbc.oracle;
 
-import org.springframework.dao.CleanupFailureDataAccessException;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-
+import org.springframework.dao.CleanupFailureDataAccessException;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.object.StoredProcedure;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
-
-import org.springframework.jdbc.object.StoredProcedure;
 
 /**
  * Implementation of the SqlTypeValue interface, for convenient
  * creation of provided scalar values as an Oracle {@link Array}.
- * 
  * <p>
  * A usage example from a {@link JdbcTemplate}:
  * <pre>
  * <code>jdbcTemplate.queryForInt(SQL, new SqlOracleArrayValue("MYARRAYTYPE", values));</code>
  * </pre>
  * <p>A usage example from a {@link StoredProcedure}:
- *
  * <pre><code>storedProcedure.declareParameter(new SqlParameter("myarrayparameter", Types.ARRAY, "MYARRAYTYPE"));
  * ...
- *
  * Map&lt;String, Object&gt; inParams = new HashMap&lt;&gt;();
  * inParams.put("myarrayparameter", new SqlOracleArrayValue("MYARRAYTYPE", objectArray);
  * Map&lt;String, Object&gt; out = storedProcedure.execute(inParams);
  * </code></pre>
- * 
  * <p>Similar to org.springframework.data.jdbc.support.oracle.SqlArrayValue
  * but updated for Spring 5 and later and OJDBC 11.2g and later.
- * 
+ *
  * @see <a href="https://docs.oracle.com/en/database/oracle/oracle-database/12.2/jajdb/oracle/jdbc/OracleConnection.html#createOracleArray-java.lang.String-java.lang.Object-">OracleConnection#createOracleArray</a>
  */
 public final class SqlOracleArrayValue implements NamedSqlValue {
@@ -63,6 +57,7 @@ public final class SqlOracleArrayValue implements NamedSqlValue {
   /**
    * Constructor that takes two parameters, one parameter with the array of values passed in to
    * the statement and one that takes the type name.
+   *
    * @param typeName the type name
    * @param values the array containing the values
    */
@@ -115,5 +110,5 @@ public final class SqlOracleArrayValue implements NamedSqlValue {
       throw new CleanupFailureDataAccessException("could not free array", e);
     }
   }
-  
+
 }
