@@ -15,10 +15,10 @@
  */
 package com.github.ferstl.spring.jdbc.oracle;
 
-import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.IfProfileValue;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -34,13 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RunWith(SpringJUnit4ClassRunner.class)
 public abstract class AbstractOracleJdbcTemplateIntegrationTest {
 
+  @Value("${db.batchsize}")
+  protected int batchSize;
+
   @Autowired
-  Environment env;
-
-  int batchSize;
-
-  @Before
-  public final void setupBatchSize() {
-    this.batchSize = this.env.getProperty("db.batchsize", Integer.class);
-  }
+  protected JdbcTemplate jdbcTemplate;
 }

@@ -15,6 +15,7 @@
  */
 package com.github.ferstl.spring.jdbc.oracle;
 
+import java.util.stream.IntStream;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -24,23 +25,12 @@ public class RowCountMatcher extends TypeSafeMatcher<int[]> {
 
   private final int[] expectedRowCounts;
 
-  public static Matcher<int[]> matchesRowCounts(int batchSize, int expectedNrOfRows) {
-    return new RowCountMatcher(batchSize, expectedNrOfRows);
+  public static Matcher<int[]> matchesRowCounts(int expectedNrOfRows) {
+    return new RowCountMatcher(expectedNrOfRows);
   }
 
-  private RowCountMatcher(int batchSize, int expectedNrOfUpdates) {
-    this.expectedRowCounts = new int[expectedNrOfUpdates];
-
-    for (int i = 0; i < expectedNrOfUpdates; i++) {
-      if ((i + 1) % batchSize == 0) {
-        this.expectedRowCounts[i] = batchSize;
-      }
-    }
-
-    int remainingRowCounts = expectedNrOfUpdates % batchSize;
-    if (remainingRowCounts != 0) {
-      this.expectedRowCounts[this.expectedRowCounts.length - 1] = remainingRowCounts;
-    }
+  private RowCountMatcher(int expectedNrOfUpdates) {
+    this.expectedRowCounts = IntStream.generate(() -> 1).limit(expectedNrOfUpdates).toArray();
   }
 
   @Override

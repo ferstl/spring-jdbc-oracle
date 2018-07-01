@@ -28,8 +28,8 @@ Binaries and source code of this project are available on [Maven Central](http:/
     <!-- Dependency to Oracle's JDBC driver (use the coordinates under which you deployed the driver). -->
     <dependency>
       <groupId>com.oracle</groupId>
-      <artifactId>ojdbc6</artifactId>
-      <version>11.2.0.3.0</version>
+      <artifactId>ojdbc8</artifactId>
+      <version>12.2.0.1</version>
     </dependency>
 
 #### Usage of the OracleNamedParameterJdbcTemplate

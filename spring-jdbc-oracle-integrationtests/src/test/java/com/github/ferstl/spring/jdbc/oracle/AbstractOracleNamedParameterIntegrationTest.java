@@ -15,20 +15,18 @@
  */
 package com.github.ferstl.spring.jdbc.oracle;
 
-import static com.github.ferstl.spring.jdbc.oracle.RowCountMatcher.matchesRowCounts;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import static com.github.ferstl.spring.jdbc.oracle.RowCountMatcher.matchesRowCounts;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration test that uses {@link OracleNamedParameterJdbcTemplate}.
@@ -51,31 +49,28 @@ public abstract class AbstractOracleNamedParameterIntegrationTest extends Abstra
   public void deleteWithArgMap() {
     int[] result = this.onpJdbcTemplate.batchUpdate(DELETE_SQL, createArgMaps(this.nrOfDeletes));
 
-    assertThat(result, matchesRowCounts(this.batchSize, this.nrOfDeletes));
+    assertThat(result, matchesRowCounts(this.nrOfDeletes));
   }
 
   @Test
   public void deleteWithParamSource() {
     int[] result = this.onpJdbcTemplate.batchUpdate(DELETE_SQL, createParamSources(this.nrOfDeletes));
 
-    assertThat(result, matchesRowCounts(this.batchSize, this.nrOfDeletes));
+    assertThat(result, matchesRowCounts(this.nrOfDeletes));
   }
 
   @Test
   public void inlists() {
-    Map<String, Object> map = Collections.singletonMap("ids", new SqlOracleArrayValue("test_array_type", 1, 2, 3));
+    Map<String, Object> map = Collections.singletonMap("ids", new SqlOracleArrayValue("TEST_ARRAY_TYPE", 1, 2, 3));
     List<String> values = this.onpJdbcTemplate.query("SELECT val "
             + "FROM test_table "
             // 18c syntax
-//            + "WHERE id = ANY(:ids)",
+            //            + "WHERE id = ANY(:ids)",
             + "WHERE id = ANY(select column_value from table(:ids))",
-            new MapSqlParameterSource(map),
-            (rs, i) -> rs.getString(1));
-    assertEquals(Arrays.asList("Value_00001", "Value_00002", "Value_00003"), values);
-  }
+        new MapSqlParameterSource(map),
+        (rs, i) -> rs.getString(1));
 
-  public static void main(String[] args) {
-    System.out.println(String.format("Value_%05d", 1));
+    assertEquals(Arrays.asList("Value_00002", "Value_00003", "Value_00004"), values);
   }
 
   private static Map<String, Object>[] createArgMaps(int nrOfRows) {
@@ -83,7 +78,7 @@ public abstract class AbstractOracleNamedParameterIntegrationTest extends Abstra
     Map<String, Object>[] args = new Map[nrOfRows];
 
     for (int i = 0; i < nrOfRows; i++) {
-      args[i] = Collections.<String, Object>singletonMap("value", i + 1);
+      args[i] = Collections.singletonMap("value", i + 1);
     }
 
     return args;
