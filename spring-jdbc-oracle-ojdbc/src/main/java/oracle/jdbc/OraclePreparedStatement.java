@@ -18,13 +18,15 @@ package oracle.jdbc;
 import java.sql.Array;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Wrapper;
 
 import oracle.sql.TIMESTAMPTZ;
 
 /**
  * Dummy {@code OraclePreparedStatement} interface which avoids a dependency to OJDBC.
  */
-public interface OraclePreparedStatement extends PreparedStatement {
+public interface OraclePreparedStatement extends AutoCloseable, OracleStatement, PreparedStatement, Statement, Wrapper {
 
   // batch support
   void setExecuteBatch(int sendBatchSize) throws SQLException;
