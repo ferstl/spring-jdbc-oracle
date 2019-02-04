@@ -32,7 +32,6 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ParameterDisposer;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.SqlTypeValue;
