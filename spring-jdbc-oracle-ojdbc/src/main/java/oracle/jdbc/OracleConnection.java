@@ -16,7 +16,9 @@
 package oracle.jdbc;
 
 import java.sql.Array;
+import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
@@ -26,5 +28,15 @@ public interface OracleConnection extends Connection {
 
   // array support
   Array createOracleArray(String arrayTypeName, Object elements) throws SQLException;
+
+  // statement caching support
+  CallableStatement getCallWithKey(String key) throws SQLException;
+  PreparedStatement getStatementWithKey(String key) throws SQLException;
+
+  void setExplicitCachingEnabled(boolean cache) throws SQLException;
+  boolean getExplicitCachingEnabled() throws SQLException;
+
+  int getStatementCacheSize() throws SQLException;
+  void setStatementCacheSize(int size) throws SQLException;
 
 }
