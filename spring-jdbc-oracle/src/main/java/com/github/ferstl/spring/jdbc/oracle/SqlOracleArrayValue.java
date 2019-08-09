@@ -19,6 +19,8 @@ import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Arrays;
+
 import org.springframework.dao.CleanupFailureDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -109,6 +111,14 @@ public final class SqlOracleArrayValue implements NamedSqlValue {
     } catch (SQLException e) {
       throw new CleanupFailureDataAccessException("could not free array", e);
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public String toString() {
+    return Arrays.toString(this.values);
   }
 
 }
