@@ -13,7 +13,7 @@ This project offers extensions to spring-jdbc that allow using the following Ora
 ## How to use spring-jdbc-oracle
 
 ### Maven Dependencies
-Binaries and source code of this project are available on [Maven Central](http://central.maven.org/maven2/com/github/ferstl/spring-jdbc-oracle/), so no further repository configuration is required. However, an additional dependency to [Oracle's proprietary JDBC driver](https://www.oracle.com/technetwork/database/application-development/jdbc/downloads/index.html) (OJDBC) is required and can be retrieved from the [Oracle Maven Repository](https://blogs.oracle.com/dev2dev/get-oracle-jdbc-drivers-and-ucp-from-oracle-maven-repository-without-ides). Once the OJDBC driver is available in your repository, the maven setup looks like this:
+Binaries and source code of this project are available on [Maven Central](http://central.maven.org/maven2/com/github/ferstl/spring-jdbc-oracle/), so no further repository configuration is required. The maven setup looks like this:
 
 ```xml
     <!-- Dependency containing the OracleJdbcTemplate -->
@@ -21,13 +21,6 @@ Binaries and source code of this project are available on [Maven Central](http:/
       <groupId>com.github.ferstl</groupId>
       <artifactId>spring-jdbc-oracle</artifactId>
       <version>2.0.0</version>
-    </dependency>
-    
-    <!-- Dependency to Oracle's JDBC driver (if you installed in manually the coordinates may differ). -->
-    <dependency>
-      <groupId>com.oracle.jdbc</groupId>
-      <artifactId>ojdbc8</artifactId>
-      <version>18.3.0.0</version>
     </dependency>
 ```
 
@@ -99,12 +92,10 @@ There are also integration tests working with these pools. See below for further
 ## Project Layout
 This project consists of three modules:
 * `spring-jdbc-oracle`: This module contains the `OracleNamedParameterJdbcTemplate` and the `SqlOracleArrayValue` and is the only module you need at a user's viewpoint.
-* `spring-jdbc-oracle-ojdbc`: This module contains a fake `OraclePreparedStatement` interface that declares the Oracle-specific methods used by the `OracleJdbcTemplate`. The module is used at compile time in order to avoid having a dependency to the OJDBC driver which is not on maven central.
 * `spring-jdbc-oracle-integrationtests`: This module contains integration tests that run agains an Oracle database. Take a look at the next section for further details.
 
 ### How to run the Integration Tests
 1. Get yourself an Oracle database. If you don't have a running Oracle instance at hand, Oracle provides a set of Docker build files on GitHub: https://github.com/oracle/docker-images/tree/master/OracleDatabase.
-1. Get the Oracle's [OJDBC driver](https://www.oracle.com/technetwork/database/application-development/jdbc/downloads/index.html) and install it in your maven repository. The POM file of the integration tests defines these coordinates: `com.oracle:ojdbc8:12.2.0.1`. Adjust the POM file in case you install the library under different coordinates.
 1. The default configuration of the integration tests assumes that you are running an Oracle database with the SID `XE` and a schema called `spring_jdbc_oracle` on localhost. Should this not be the case in your environment, you need to create a property file called `database_<your-system-username>.properties` in `spring-jdbc-oracle-integrationtest/src/test/resources` defining the coordinates of your database and schema. Take a look at the `database.properties` configuration file for the values to configure.
 1. Once the database is set up and configured, the tests need to be run with the system property `-Dtestgroup=integration`, e.g `mvn -Dtestgroup=integration clean test`.
 

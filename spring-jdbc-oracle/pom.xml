@@ -15,10 +15,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>spring-jdbc-oracle-ojdbc</artifactId>
-      <version>${project.version}</version>
-      <optional>true</optional>
+      <groupId>com.oracle.ojdbc</groupId>
+      <artifactId>ojdbc8</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
