@@ -15,23 +15,20 @@
  */
 package com.github.ferstl.spring.jdbc.oracle;
 
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.annotation.IfProfileValue;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Abstract base class for integration tests. This class does only set the required annotations for the integration
  * tests.
  */
-@ContextConfiguration(classes = DatabaseConfiguration.class)
 @Transactional
-@IfProfileValue(name = "testgroup", value = "integration")
-@RunWith(SpringJUnit4ClassRunner.class)
+@Tag("integration")
+@SpringJUnitConfig(DatabaseConfiguration.class)
 public abstract class AbstractOracleJdbcTemplateIntegrationTest {
 
   @Value("${db.batchsize}")

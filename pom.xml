@@ -67,7 +67,7 @@
     <!-- Dependency versions -->
     <ojdbc8.version>19.3.0.0</ojdbc8.version>
     <springframework.version>5.2.0.RELEASE</springframework.version>
-    <junit.version>4.12</junit.version>
+    <junit.version>5.6.2</junit.version>
     <hamcrest.version>2.0.0.0</hamcrest.version>
     <mockito.version>3.1.0</mockito.version>
 
@@ -106,10 +106,11 @@
       </dependency>
 
       <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
         <version>${junit.version}</version>
-        <scope>test</scope>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>

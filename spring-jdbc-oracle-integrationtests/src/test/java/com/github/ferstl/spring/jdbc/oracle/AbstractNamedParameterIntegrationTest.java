@@ -15,16 +15,18 @@
  */
 package com.github.ferstl.spring.jdbc.oracle;
 
+import static com.github.ferstl.spring.jdbc.oracle.RowCountMatcher.matchesRowCounts;
+import static org.hamcrest.MatcherAssert.assertThat;
+
 import java.util.Collections;
 import java.util.Map;
-import org.junit.Before;
-import org.junit.Test;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import static com.github.ferstl.spring.jdbc.oracle.RowCountMatcher.matchesRowCounts;
-import static org.junit.Assert.assertThat;
 
 /**
  * Integration test that uses {@link NamedParameterJdbcTemplate}.
@@ -38,9 +40,9 @@ public abstract class AbstractNamedParameterIntegrationTest extends AbstractOrac
 
   private int nrOfDeletes;
 
-  @Before
+  @BeforeEach
   public void before() {
-    this.nrOfDeletes = this.batchSize * 2 + 2;
+    this.nrOfDeletes = (this.batchSize * 2) + 2;
   }
 
   @Test

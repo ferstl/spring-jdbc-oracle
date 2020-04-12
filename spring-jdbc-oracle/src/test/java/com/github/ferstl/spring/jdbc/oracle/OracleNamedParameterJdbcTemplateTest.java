@@ -15,7 +15,7 @@
  */
 package com.github.ferstl.spring.jdbc.oracle;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -29,8 +29,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.ParameterDisposer;
 import org.springframework.jdbc.core.PreparedStatementCreator;
@@ -47,7 +47,7 @@ public class OracleNamedParameterJdbcTemplateTest {
 
   private OracleNamedParameterJdbcTemplate namedJdbcTemplate;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     JdbcOperations jdbcOperations = mock(JdbcOperations.class);
     this.namedJdbcTemplate = new OracleNamedParameterJdbcTemplate(jdbcOperations);
@@ -201,12 +201,7 @@ public class OracleNamedParameterJdbcTemplateTest {
     when(preparedStatement.unwrap(OraclePreparedStatement.class)).thenReturn(oraclePreparedStatement);
     when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
 
-    try {
-      preparedStatementCreator.createPreparedStatement(connection);
-      fail("connection is currently unsupported");
-    } catch (IllegalArgumentException e) {
-      // should reach here
-    }
+    assertThrows(IllegalArgumentException.class, () -> preparedStatementCreator.createPreparedStatement(connection), "connection is currently unsupported");
   }
   
   @Test
@@ -224,12 +219,7 @@ public class OracleNamedParameterJdbcTemplateTest {
     when(preparedStatement.unwrap(OraclePreparedStatement.class)).thenReturn(oraclePreparedStatement);
     when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
     
-    try {
-      preparedStatementCreator.createPreparedStatement(connection);
-      fail("SqlValue is currently unsupported");
-    } catch (IllegalArgumentException e) {
-      // should reach here
-    }
+    assertThrows(IllegalArgumentException.class, () -> preparedStatementCreator.createPreparedStatement(connection), "SqlValue is currently unsupported");
   }
   
   @Test
@@ -247,12 +237,7 @@ public class OracleNamedParameterJdbcTemplateTest {
     when(preparedStatement.unwrap(OraclePreparedStatement.class)).thenReturn(oraclePreparedStatement);
     when(connection.prepareStatement(sql)).thenReturn(preparedStatement);
     
-    try {
-      preparedStatementCreator.createPreparedStatement(connection);
-      fail("SqlValue is currently unsupported");
-    } catch (IllegalArgumentException e) {
-      // should reach here
-    }
+    assertThrows(IllegalArgumentException.class, () -> preparedStatementCreator.createPreparedStatement(connection), "SqlValue is currently unsupported");
   }
 
   @Test
