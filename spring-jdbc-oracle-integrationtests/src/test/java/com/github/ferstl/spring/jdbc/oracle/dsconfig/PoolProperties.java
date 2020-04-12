@@ -16,6 +16,7 @@
 package com.github.ferstl.spring.jdbc.oracle.dsconfig;
 
 import java.util.Properties;
+
 import org.springframework.core.env.Environment;
 
 /**
@@ -28,7 +29,7 @@ final class PoolProperties {
     props.setProperty("url", env.getProperty("db.url"));
     props.setProperty("username", env.getProperty("db.username"));
     props.setProperty("password", env.getProperty("db.password"));
-    props.setProperty("defaultAutoCommit ", "false");
+    props.setProperty("defaultAutoCommit", "false");
 
     props.setProperty("driverClassName", env.getProperty("driverClassName"));
     props.setProperty("maxActive", env.getProperty("maxActive"));
