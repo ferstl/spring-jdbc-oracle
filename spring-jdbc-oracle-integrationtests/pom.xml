@@ -12,7 +12,7 @@
   <properties>
     <!-- Dependency versions (only used in this module). -->
     <commons-dbcp.version>1.4</commons-dbcp.version>
-    <tomcat-jdbc.version>9.0.4</tomcat-jdbc.version>
+    <tomcat-jdbc.version>9.0.34</tomcat-jdbc.version>
 
     <!-- Build properties. -->
     <main.basedir>${project.parent.basedir}</main.basedir>
