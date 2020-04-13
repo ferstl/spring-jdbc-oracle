@@ -17,13 +17,13 @@ package com.github.ferstl.spring.jdbc.oracle;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.sql.DataSource;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -33,6 +33,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
+
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.CommonsDbcpDataSourceConfiguration;
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.SingleConnectionDataSourceConfiguration;
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.TomcatPoolDataSourceConfiguration;
@@ -50,10 +51,6 @@ public class DatabaseConfiguration {
 
   private static final int NUMBER_OF_ROWS = 10000;
   private static final String INSERT_SQL = "INSERT INTO test_table(id, val, numval) VALUES(seq_test_table.nextval, ?, ?)";
-
-
-  @Autowired
-  private Environment env;
 
   @Bean
   public JdbcTemplate jdbcTemplate(DataSource dataSource, PlatformTransactionManager transactionManager) {
