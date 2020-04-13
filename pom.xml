@@ -3,9 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.ferstl</groupId>
-  <artifactId>spring-jdbc-oracle-parent</artifactId>
+  <artifactId>spring-jdbc-oracle</artifactId>
   <name>${project.artifactId}</name>
-  <packaging>pom</packaging>
   <version>2.0.1-SNAPSHOT</version>
 
   <description>
@@ -65,22 +64,19 @@
     <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
 
     <!-- Dependency versions -->
+    <commons-dbcp.version>2.7.0</commons-dbcp.version>
     <ojdbc8.version>19.3.0.0</ojdbc8.version>
     <springframework.version>5.2.5.RELEASE</springframework.version>
     <junit.version>5.6.2</junit.version>
     <hamcrest.version>2.0.0.0</hamcrest.version>
     <log4j.version>2.13.1</log4j.version>
     <mockito.version>3.3.3</mockito.version>
+    <tomcat-jdbc.version>9.0.34</tomcat-jdbc.version>
 
     <!-- Build properties -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <main.basedir>${project.basedir}</main.basedir>
   </properties>
-
-  <modules>
-    <module>spring-jdbc-oracle</module>
-    <module>spring-jdbc-oracle-integrationtests</module>
-  </modules>
 
   <dependencyManagement>
     <dependencies>
@@ -134,6 +130,71 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.oracle.ojdbc</groupId>
+      <artifactId>ojdbc8</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-jdbc</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>java-hamcrest</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-dbcp2</artifactId>
+      <version>${commons-dbcp.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.tomcat</groupId>
+      <artifactId>tomcat-jdbc</artifactId>
+      <version>${tomcat-jdbc.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
   <build>
     <pluginManagement>

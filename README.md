@@ -88,12 +88,6 @@ The project has been tested with these connection pools:
 
 There are also integration tests working with these pools. See below for further details about running these tests.
 
-
-## Project Layout
-This project consists of three modules:
-* `spring-jdbc-oracle`: This module contains the `OracleNamedParameterJdbcTemplate` and the `SqlOracleArrayValue` and is the only module you need at a user's viewpoint.
-* `spring-jdbc-oracle-integrationtests`: This module contains integration tests that run agains an Oracle database. Take a look at the next section for further details.
-
 ### How to run the Integration Tests
 1. Follow the instructions of [Oracle Database on Docker](https://github.com/oracle/docker-images/tree/master/OracleDatabase/SingleInstance) to build a 19.3.0-se2 Docker image using `./buildDockerImage.sh -v 19.3.0 -s`.
 1. Run `spring-jdbc-oracle-integrationtests/src/test/resources/run_oracle.sh`. If the image already rests run `docker start spring-jdbc-oracle`. Wait for a long time for the image to start.
