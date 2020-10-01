@@ -1,7 +1,7 @@
 # spring-jdbc-oracle
 *- Oracle specific extensions for spring-jdbc*
 
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.ferstl/spring-jdbc-oracle/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.ferstl/spring-jdbc-oracle)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.ferstl/spring-jdbc-oracle/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.ferstl/spring-jdbc-oracle) [![javadoc](https://javadoc.io/badge2/com.github.ferstl/spring-jdbc-oracle/javadoc.svg)](https://javadoc.io/doc/com.github.ferstl/spring-jdbc-oracle) 
 
 This project offers extensions to spring-jdbc that allow using the following Oracle specific features:
 
