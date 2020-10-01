@@ -23,28 +23,50 @@ import java.util.Arrays;
 
 import org.springframework.dao.CleanupFailureDataAccessException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.object.StoredProcedure;
+import org.springframework.jdbc.core.SqlTypeValue;
+
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 
 /**
- * Implementation of the SqlTypeValue interface, for convenient
+ * And implementation of the {@link SqlTypeValue} interface, for convenient
  * creation of provided scalar values as an Oracle {@link Array}.
- * <p>
- * A usage example from a {@link JdbcTemplate}:
+ *
+ * <h2>SQL Syntax</h2>
+ * The following syntax can be used to filter a column against an array of scalar values
  * <pre>
- * <code>jdbcTemplate.queryForInt(SQL, new SqlOracleArrayValue("MYARRAYTYPE", values));</code>
+ * <code>WHERE filtered_column_name = ANY(select column_value from table(:ids))</code>
  * </pre>
- * <p>A usage example from a {@link StoredProcedure}:
- * <pre><code>storedProcedure.declareParameter(new SqlParameter("myarrayparameter", Types.ARRAY, "MYARRAYTYPE"));
+ * {@code filtered_column_name} has to be replaced by the name of the column to filter against
+ * the array while {@code column_value} and {@code table} have to remain literally the same.
+ * <h2>JdbcTemplate Example</h2>
+ * <pre><code> jdbcTemplate.queryForInt("SELECT val "
+ *          + "FROM test_table "
+ *          + "WHERE id = ANY(select column_value from table(?))", new SqlOracleArrayValue("MYARRAYTYPE", values));</code></pre>
+ *
+ * <h2>OracleNamedParameterJdbcTemplate Example</h2>
+ * <pre><code> Map&lt;String, Object&gt; map = Collections.singletonMap("ids", new SqlOracleArrayValue("MYARRAYTYPE", values));
+ * namedParameterJdbcTemplate.query("SELECT val "
+ *          + "FROM test_table "
+ *          + "WHERE id = ANY(select column_value from table(:ids))",
+ *      new MapSqlParameterSource(map),
+ *      (rs, i) -&gt; ...);
+ * </code></pre>
+ *
+ * <h2>StoredProcedure Example</h2>
+ * <pre><code> storedProcedure.declareParameter(new SqlParameter("myarrayparameter", Types.ARRAY, "MYARRAYTYPE"));
  * ...
  * Map&lt;String, Object&gt; inParams = new HashMap&lt;&gt;();
  * inParams.put("myarrayparameter", new SqlOracleArrayValue("MYARRAYTYPE", objectArray);
  * Map&lt;String, Object&gt; out = storedProcedure.execute(inParams);
  * </code></pre>
- * <p>Similar to org.springframework.data.jdbc.support.oracle.SqlArrayValue
+ *
+ *
+ * <p>This class is similar to org.springframework.data.jdbc.support.oracle.SqlArrayValue
  * but updated for Spring 5 and later and OJDBC 11.2g and later.
+ *
+ * <p>This class can be combined with {@link OracleNamedParameterJdbcTemplate} for named parameter
+ * support.
  *
  * @see <a href="https://docs.oracle.com/en/database/oracle/oracle-database/12.2/jajdb/oracle/jdbc/OracleConnection.html#createOracleArray-java.lang.String-java.lang.Object-">OracleConnection#createOracleArray</a>
  */
