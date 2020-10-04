@@ -70,7 +70,7 @@
     <springframework.version>5.2.5.RELEASE</springframework.version>
     <junit.version>5.6.2</junit.version>
     <hamcrest.version>2.0.0.0</hamcrest.version>
-    <log4j.version>2.13.1</log4j.version>
+    <log4j.version>2.13.3</log4j.version>
     <mockito.version>3.3.3</mockito.version>
     <tomcat-jdbc.version>9.0.34</tomcat-jdbc.version>
 
