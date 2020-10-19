@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,12 +31,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
+import oracle.jdbc.OracleResultSet;
+
 /**
  * Integration test that uses {@link OracleNamedParameterJdbcTemplate}.
  */
 public abstract class AbstractOracleNamedParameterIntegrationTest extends AbstractOracleJdbcTemplateIntegrationTest {
 
   private static final String DELETE_SQL = "DELETE FROM test_table t WHERE t.numval = :value";
+
+  private static final UuidOracleDataFactory UUID_ORACLE_DATA_FACTORY = new UuidOracleDataFactory();
+
 
   @Autowired
   private OracleNamedParameterJdbcTemplate onpJdbcTemplate;
@@ -73,6 +79,21 @@ public abstract class AbstractOracleNamedParameterIntegrationTest extends Abstra
         (rs, i) -> rs.getString(1));
 
     assertEquals(Arrays.asList("Value_00002", "Value_00003", "Value_00004"), values);
+  }
+
+  @Test
+  public void uuid() {
+    UUID expected = UUID.randomUUID();
+    Map<String, Object> map = Collections.singletonMap("uuid", new UuidOracleData(expected));
+    UUID actual = this.onpJdbcTemplate.queryForObject("SELECT :uuid AS uuid_row"
+            + " FROM dual",
+            new MapSqlParameterSource(map),
+            (rs, i) -> {
+              UuidOracleData oracleData = (UuidOracleData) rs.unwrap(OracleResultSet.class).getObject("uuid_row", UUID_ORACLE_DATA_FACTORY);
+              return oracleData.getUuid();
+            });
+
+    assertEquals(expected, actual);
   }
 
   private static Map<String, Object>[] createArgMaps(int nrOfRows) {

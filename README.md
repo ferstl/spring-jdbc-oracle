@@ -24,7 +24,7 @@ Binaries and source code of this project are available on [Maven Central](http:/
     </dependency>
 ```
 
-### Named Parameter Support
+## Named Parameter Support
 
 Oracle natively supports named parameters yet Spring's `NamedParameterJdbcTemplate` still ends up parsing and rewriting the query. This is unnecessary when proprietary Oracle vendor extensions are used.
 
@@ -36,7 +36,7 @@ Oracle natively supports named parameters yet Spring's `NamedParameterJdbcTempla
 The classic `NamedParameterJdbcTemplate` contains a few more methods but all of them end up calling one of the three methods mentioned above.
 
 
-#### Usage of the OracleNamedParameterJdbcTemplate
+### Usage of the OracleNamedParameterJdbcTemplate
 
 The `OracleNamedParameterJdbcTemplate` is a replacement for Spring's `NamedParameterJdbcTemplate` which works only on Oracle databases. You can use the `OracleNamedParameterJdbcTemplate` in almost the same way. The only difference is that collections are not supported, instead arrays with `SqlOracleArrayValue` have to be used:
 
@@ -67,6 +67,10 @@ this.jdbcOperations.query("SELECT * FROM some_table WHERE id IN (?)",
 ```
 
 `SqlOracleArrayValue` can be used with either the standard `JdbcTemplate` or the `OracleNamedParameterJdbcTemplate`.
+
+## UUID Support
+
+`UuidOracleData` and `UuidOracleDataFactory` allow reading and writing `java.util.UUID` objects as `RAW(16)`. This is preferred over `VARCHAR2(32)` or `VARCHAR2(36)` because it is [much more efficient](https://medium.com/@FranckPachot/uuid-aka-guid-vs-oracle-sequence-number-ab11aa7dbfe7).
 
 ## Explicit Statement Caching
 
