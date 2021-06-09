@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -100,6 +102,21 @@ public abstract class AbstractOracleNamedParameterIntegrationTest extends Abstra
             new SqlParameterSource[] {new MapSqlParameterSource(map1), new MapSqlParameterSource(map2)});
 
     assertArrayEquals(new int[] {10, 20}, updateCount);
+  }
+
+  @Test
+  public void queryForStream() {
+    Map<String, Object> map = Collections.singletonMap("end", 10);
+
+    int[] array;
+    try (Stream<Integer> stream = this.onpJdbcTemplate.queryForStream("SELECT LEVEL "
+            + "FROM dual "
+            + "CONNECT BY LEVEL <= :end",
+            map, (rs, i) -> rs.getInt(1))) {
+      array = stream.mapToInt(Integer::intValue).toArray();
+    }
+
+    assertArrayEquals(IntStream.rangeClosed(1, 10).toArray(), array);
   }
 
   @Test
