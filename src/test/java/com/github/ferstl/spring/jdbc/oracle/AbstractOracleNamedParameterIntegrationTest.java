@@ -17,13 +17,17 @@ package com.github.ferstl.spring.jdbc.oracle;
 
 import static com.github.ferstl.spring.jdbc.oracle.RowCountMatcher.matchesRowCounts;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -79,6 +83,40 @@ public abstract class AbstractOracleNamedParameterIntegrationTest extends Abstra
         (rs, i) -> rs.getString(1));
 
     assertEquals(Arrays.asList("Value_00002", "Value_00003", "Value_00004"), values);
+  }
+
+  @Test
+  public void batchUpdate() {
+
+    Map<String, Object> map1 = new HashMap<>(2);
+    map1.put("low", 1);
+    map1.put("high", 10);
+
+    Map<String, Object> map2 = new HashMap<>(2);
+    map2.put("low", 101);
+    map2.put("high", 120);
+
+    int[] updateCount = this.onpJdbcTemplate.batchUpdate("UPDATE test_table "
+            + "SET numval = - numval "
+            + "WHERE id BETWEEN :low AND :high",
+            new SqlParameterSource[] {new MapSqlParameterSource(map1), new MapSqlParameterSource(map2)});
+
+    assertArrayEquals(new int[] {10, 20}, updateCount);
+  }
+
+  @Test
+  public void queryForStream() {
+    Map<String, Object> map = Collections.singletonMap("end", 10);
+
+    int[] array;
+    try (Stream<Integer> stream = this.onpJdbcTemplate.queryForStream("SELECT LEVEL "
+            + "FROM dual "
+            + "CONNECT BY LEVEL <= :end",
+            map, (rs, i) -> rs.getInt(1))) {
+      array = stream.mapToInt(Integer::intValue).toArray();
+    }
+
+    assertArrayEquals(IntStream.rangeClosed(1, 10).toArray(), array);
   }
 
   @Test
