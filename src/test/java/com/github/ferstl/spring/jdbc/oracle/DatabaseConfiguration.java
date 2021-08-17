@@ -35,6 +35,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.CommonsDbcpDataSourceConfiguration;
+import com.github.ferstl.spring.jdbc.oracle.dsconfig.RollbackSingleConnectionDataSourceConfiguration;
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.SingleConnectionDataSourceConfiguration;
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.TomcatPoolDataSourceConfiguration;
 
@@ -44,6 +45,7 @@ import com.github.ferstl.spring.jdbc.oracle.dsconfig.TomcatPoolDataSourceConfigu
     "classpath:connectionpool.properties"})
 @Import({
     SingleConnectionDataSourceConfiguration.class,
+    RollbackSingleConnectionDataSourceConfiguration.class,
     TomcatPoolDataSourceConfiguration.class,
     CommonsDbcpDataSourceConfiguration.class})
 @EnableTransactionManagement

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 by Stefan Ferstl <st.ferstl@gmail.com>
+ * Copyright (c) 2021 by Philippe Marschall <philippe.marschall@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.github.ferstl.spring.jdbc.oracle.dsconfig;
+package com.github.ferstl.spring.jdbc.oracle;
 
+import org.springframework.test.context.ActiveProfiles;
 
-public final class DataSourceProfile {
+import com.github.ferstl.spring.jdbc.oracle.dsconfig.DataSourceProfile;
 
-  public static final String SINGLE_CONNECTION = "single-connection";
-  public static final String ROLLBACK_SINGLE_CONNECTION = "rollback-single-connection";
-  public static final String TOMCAT_POOL = "tomcat-pool";
-  public static final String COMMONS_DBCP = "dbcp-pool";
-
-  private DataSourceProfile() {
-    throw new AssertionError("Not instantiable");
-  }
+@ActiveProfiles(DataSourceProfile.ROLLBACK_SINGLE_CONNECTION)
+public class RscdsOracleNamedParameterIntegrationTest extends AbstractOracleNamedParameterIntegrationTest {
 
 }

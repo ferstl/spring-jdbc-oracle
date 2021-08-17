@@ -84,6 +84,10 @@ this.jdbcOperations.query(new CachedPreparedStatementCreator(cacheKey, SQL), row
 
 At the moment explicit statement caching can not be used with `OracleNamedParameterJdbcTemplate` because `NamedParameterJdbcOperations` does not offer any methods that take a `PreparedStatementCreator`.
 
+## Rollback Before Close
+
+`RollbackSingleConnectionDataSource` is like `SingleConnectionDataSource` but calls `Connection#rollback()` before calling `Connection#close()` to avoid commits in Oracle, see [spring-framework#27249](https://github.com/spring-projects/spring-framework/issues/27249).
+
 ## Connection Pools
 
 The project has been tested with these connection pools:
