@@ -54,10 +54,10 @@ import oracle.jdbc.OraclePreparedStatement;
  * soft parses in you application.
  * 
  * <p>Make sure you
- * <a href="https://docs.oracle.com/en/database/oracle/oracle-database/18/jjdbc/statement-and-resultset-caching.html#GUID-3E425401-A7F0-49FA-A057-01DB6ECCFFC9">enable explicit statement caching</a>
+ * <a href="https://docs.oracle.com/en/database/oracle/oracle-database/21/jjdbc/statement-and-resultset-caching.html#GUID-3E425401-A7F0-49FA-A057-01DB6ECCFFC9">enable explicit statement caching</a>
  * .</p>
  * 
- * @see <a href="https://docs.oracle.com/en/database/oracle/oracle-database/18/jjdbc/statement-and-resultset-caching.html#GUID-DFBC7F09-5F27-42E1-8044-24733A6AE5F8">Explicit Statement Caching</a>
+ * @see <a href="https://docs.oracle.com/en/database/oracle/oracle-database/21/jjdbc/statement-and-resultset-caching.html#GUID-DFBC7F09-5F27-42E1-8044-24733A6AE5F8">Explicit Statement Caching</a>
  * @see JdbcOperations#query(PreparedStatementCreator, org.springframework.jdbc.core.ResultSetExtractor)
  * @see JdbcOperations#query(PreparedStatementCreator, org.springframework.jdbc.core.RowCallbackHandler)
  * @see JdbcOperations#query(PreparedStatementCreator, org.springframework.jdbc.core.RowMapper)

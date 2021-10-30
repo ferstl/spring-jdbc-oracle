@@ -29,28 +29,32 @@ import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OraclePreparedStatement;
 
 /**
- * And implementation of the {@link SqlTypeValue} interface, for convenient
- * creation of provided scalar values as an Oracle {@link Array}.
+ * An implementation of {@link SqlTypeValue} for convenient creation
+ * of an Oracle {@link Array} from the provided scalar values.
  *
  * <h2>SQL Syntax</h2>
- * The following syntax can be used to filter a column against an array of scalar values
+ * Any of the following two syntax can be used to filter a column against an array of scalar values
  * <pre>
- * <code>WHERE filtered_column_name = ANY(select column_value from table(:ids))</code>
+ * <code>WHERE filtered_column_name = ANY(SELECT column_value FROM table(:ids))</code>
+ * </pre>
+ * <pre>
+ * <code>WHERE filtered_column_name IN (SELECT column_value FROM table(:ids))</code>
  * </pre>
  * {@code filtered_column_name} has to be replaced by the name of the column to filter against
  * the array while {@code column_value} and {@code table} have to remain literally the same.
  * <h2>JdbcTemplate Example</h2>
  * <pre><code> jdbcTemplate.queryForInt("SELECT val "
  *          + "FROM test_table "
- *          + "WHERE id = ANY(select column_value from table(?))", new SqlOracleArrayValue("MYARRAYTYPE", values));</code></pre>
+ *          + "WHERE id = ANY(SELECT column_value FROM table(?))",
+ *             new SqlOracleArrayValue("MYARRAYTYPE", values));</code></pre>
  *
  * <h2>OracleNamedParameterJdbcTemplate Example</h2>
  * <pre><code> Map&lt;String, Object&gt; map = Collections.singletonMap("ids", new SqlOracleArrayValue("MYARRAYTYPE", values));
  * namedParameterJdbcTemplate.query("SELECT val "
  *          + "FROM test_table "
- *          + "WHERE id = ANY(select column_value from table(:ids))",
- *      new MapSqlParameterSource(map),
- *      (rs, i) -&gt; ...);
+ *          + "WHERE id = ANY(SELECT column_value FROM table(:ids))",
+ *             new MapSqlParameterSource(map),
+ *            (rs, i) -&gt; ...);
  * </code></pre>
  *
  * <h2>StoredProcedure Example</h2>
@@ -62,13 +66,13 @@ import oracle.jdbc.OraclePreparedStatement;
  * </code></pre>
  *
  *
- * <p>This class is similar to org.springframework.data.jdbc.support.oracle.SqlArrayValue
+ * <p>This class is similar to {@code org.springframework.data.jdbc.support.oracle.SqlArrayValue}
  * but updated for Spring 5 and later and OJDBC 11.2g and later.
  *
  * <p>This class can be combined with {@link OracleNamedParameterJdbcTemplate} for named parameter
  * support.
  *
- * @see <a href="https://docs.oracle.com/en/database/oracle/oracle-database/12.2/jajdb/oracle/jdbc/OracleConnection.html#createOracleArray-java.lang.String-java.lang.Object-">OracleConnection#createOracleArray</a>
+ * @see <a href="https://docs.oracle.com/en/database/oracle/oracle-database/21/jajdb/oracle/jdbc/OracleConnection.html#createOracleArray_java_lang_String_java_lang_Object_">OracleConnection#createOracleArray</a>
  */
 public final class SqlOracleArrayValue implements NamedSqlValue {
 
