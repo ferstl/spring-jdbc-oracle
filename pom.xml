@@ -65,14 +65,14 @@
     <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
 
     <!-- Dependency versions -->
-    <commons-dbcp.version>2.8.0</commons-dbcp.version>
-    <ojdbc.version>21.1.0.0</ojdbc.version>
-    <springframework.version>5.3.8</springframework.version>
-    <junit.version>5.7.2</junit.version>
+    <commons-dbcp.version>2.9.0</commons-dbcp.version>
+    <ojdbc.version>21.3.0.0</ojdbc.version>
+    <springframework.version>5.3.12</springframework.version>
+    <junit.version>5.8.1</junit.version>
     <hamcrest.version>2.0.0.0</hamcrest.version>
     <log4j.version>2.14.1</log4j.version>
-    <mockito.version>3.11.0</mockito.version>
-    <tomcat-jdbc.version>10.0.5</tomcat-jdbc.version>
+    <mockito.version>4.0.0</mockito.version>
+    <tomcat-jdbc.version>10.0.12</tomcat-jdbc.version>
 
     <!-- Build properties -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
