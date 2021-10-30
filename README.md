@@ -94,6 +94,7 @@ The project has been tested with these connection pools:
 * [Commons DBCP](https://commons.apache.org/proper/commons-dbcp/)
 * [HikariCP](https://github.com/brettwooldridge/HikariCP)
 * [Tomcat JDBC Connection Pool](https://tomcat.apache.org/tomcat-9.0-doc/jdbc-pool.html).
+* [UCP](https://docs.oracle.com/en/database/oracle/oracle-database/21/jjucp/intro.html)
 
 There are also integration tests working with these pools. See below for further details about running these tests.
 

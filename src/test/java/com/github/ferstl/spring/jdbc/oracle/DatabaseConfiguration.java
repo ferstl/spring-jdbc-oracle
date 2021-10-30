@@ -39,6 +39,7 @@ import com.github.ferstl.spring.jdbc.oracle.dsconfig.HikariCpDataSourceConfigura
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.RollbackSingleConnectionDataSourceConfiguration;
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.SingleConnectionDataSourceConfiguration;
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.TomcatPoolDataSourceConfiguration;
+import com.github.ferstl.spring.jdbc.oracle.dsconfig.UcpDataSourceConfiguration;
 
 @Configuration
 @PropertySource({
@@ -49,6 +50,7 @@ import com.github.ferstl.spring.jdbc.oracle.dsconfig.TomcatPoolDataSourceConfigu
     RollbackSingleConnectionDataSourceConfiguration.class,
     HikariCpDataSourceConfiguration.class,
     TomcatPoolDataSourceConfiguration.class,
+    UcpDataSourceConfiguration.class,
     CommonsDbcpDataSourceConfiguration.class})
 @EnableTransactionManagement
 public class DatabaseConfiguration {
