@@ -72,6 +72,7 @@
     <hamcrest.version>2.0.0.0</hamcrest.version>
     <log4j.version>2.14.1</log4j.version>
     <mockito.version>4.0.0</mockito.version>
+    <hikaricp.version>4.0.3</hikaricp.version>
     <tomcat-jdbc.version>10.0.12</tomcat-jdbc.version>
 
     <!-- Build properties -->
@@ -172,6 +173,11 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+     <groupId>com.zaxxer</groupId>
+     <artifactId>HikariCP</artifactId>
+     <version>${hikaricp.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.apache.tomcat</groupId>
       <artifactId>tomcat-jdbc</artifactId>
       <version>${tomcat-jdbc.version}</version>
@@ -184,8 +190,14 @@
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
+      <artifactId>log4j-slf4j18-impl</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
