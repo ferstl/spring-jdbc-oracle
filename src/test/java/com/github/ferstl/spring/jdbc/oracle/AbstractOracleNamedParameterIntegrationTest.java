@@ -72,16 +72,26 @@ public abstract class AbstractOracleNamedParameterIntegrationTest extends Abstra
   }
 
   @Test
-  public void inlists() {
-    Map<String, Object> map = Collections.singletonMap("ids", new SqlOracleArrayValue("TEST_ARRAY_TYPE", 1, 2, 3));
+  public void inlistsAny() {
+    Map<String, Object> parameters = Collections.singletonMap("ids", new SqlOracleArrayValue("TEST_ARRAY_TYPE", 1, 2, 3));
     List<String> values = this.onpJdbcTemplate.query("SELECT val "
             + "FROM test_table "
-            // 18c syntax
-            //            + "WHERE id = ANY(:ids)",
-            + "WHERE id = ANY(select column_value from table(:ids))",
-        new MapSqlParameterSource(map),
+            + "WHERE id = ANY(SELECT column_value FROM table(:ids))",
+        new MapSqlParameterSource(parameters),
         (rs, i) -> rs.getString(1));
 
+    assertEquals(Arrays.asList("Value_00002", "Value_00003", "Value_00004"), values);
+  }
+
+  @Test
+  public void inlistsIn() {
+    Map<String, Object> parameters = Collections.singletonMap("ids", new SqlOracleArrayValue("TEST_ARRAY_TYPE", 1, 2, 3));
+    List<String> values = this.onpJdbcTemplate.query("SELECT val "
+            + "FROM test_table "
+            + "WHERE id IN(SELECT column_value FROM table(:ids))",
+            new MapSqlParameterSource(parameters),
+            (rs, i) -> rs.getString(1));
+    
     assertEquals(Arrays.asList("Value_00002", "Value_00003", "Value_00004"), values);
   }
 
