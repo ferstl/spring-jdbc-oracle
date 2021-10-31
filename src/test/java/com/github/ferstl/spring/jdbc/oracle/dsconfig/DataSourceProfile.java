@@ -22,6 +22,8 @@ public final class DataSourceProfile {
   public static final String ROLLBACK_SINGLE_CONNECTION = "rollback-single-connection";
   public static final String TOMCAT_POOL = "tomcat-pool";
   public static final String COMMONS_DBCP = "dbcp-pool";
+  public static final String HIKARICP = "hikaricp";
+  public static final String UCP = "ucp";
 
   private DataSourceProfile() {
     throw new AssertionError("Not instantiable");

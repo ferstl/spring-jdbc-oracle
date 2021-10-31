@@ -35,9 +35,11 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.CommonsDbcpDataSourceConfiguration;
+import com.github.ferstl.spring.jdbc.oracle.dsconfig.HikariCpDataSourceConfiguration;
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.RollbackSingleConnectionDataSourceConfiguration;
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.SingleConnectionDataSourceConfiguration;
 import com.github.ferstl.spring.jdbc.oracle.dsconfig.TomcatPoolDataSourceConfiguration;
+import com.github.ferstl.spring.jdbc.oracle.dsconfig.UcpDataSourceConfiguration;
 
 @Configuration
 @PropertySource({
@@ -46,7 +48,9 @@ import com.github.ferstl.spring.jdbc.oracle.dsconfig.TomcatPoolDataSourceConfigu
 @Import({
     SingleConnectionDataSourceConfiguration.class,
     RollbackSingleConnectionDataSourceConfiguration.class,
+    HikariCpDataSourceConfiguration.class,
     TomcatPoolDataSourceConfiguration.class,
+    UcpDataSourceConfiguration.class,
     CommonsDbcpDataSourceConfiguration.class})
 @EnableTransactionManagement
 public class DatabaseConfiguration {
