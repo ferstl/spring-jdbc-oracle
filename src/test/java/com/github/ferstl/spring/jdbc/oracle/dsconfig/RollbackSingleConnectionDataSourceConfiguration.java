@@ -29,6 +29,7 @@ import com.github.ferstl.spring.jdbc.oracle.RollbackSingleConnectionDataSource;
 public class RollbackSingleConnectionDataSourceConfiguration {
 
   @Bean
+  @SuppressWarnings("deprecation")
   public DataSource dataSource(
       @Value("${db.url}") String url,
       @Value("${db.username}") String userName,

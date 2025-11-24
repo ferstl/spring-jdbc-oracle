@@ -21,7 +21,10 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
 import java.util.Objects;
+
 import javax.sql.DataSource;
+
+import org.jspecify.annotations.Nullable;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.ParameterDisposer;
@@ -34,7 +37,7 @@ import org.springframework.jdbc.core.namedparam.ParsedSql;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.SqlValue;
-import org.springframework.lang.Nullable;
+
 import oracle.jdbc.OraclePreparedStatement;
 
 /**

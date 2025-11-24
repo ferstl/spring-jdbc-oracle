@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 public class RollbackSingleConnectionDataSourceTest {
 
   @Test
+  @SuppressWarnings("deprecation")
   public void rollbackBeforeClose() throws SQLException {
     Connection targetConnection = mock(Connection.class);
     when(targetConnection.getAutoCommit()).thenReturn(false);

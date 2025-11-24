@@ -50,30 +50,30 @@
 
   <properties>
     <!-- Plugin versions -->
-    <license-maven-plugin.version>4.5</license-maven-plugin.version>
-    <maven-clean-plugin.version>3.4.0</maven-clean-plugin.version>
-    <maven-compiler-plugin.version>3.13.0</maven-compiler-plugin.version>
-    <maven-deploy-plugin.version>3.1.2</maven-deploy-plugin.version>
-    <maven-failsafe-plugin.version>3.3.1</maven-failsafe-plugin.version>
-    <maven-gpg-plugin.version>3.2.5</maven-gpg-plugin.version>
-    <maven-install-plugin.version>3.1.2</maven-install-plugin.version>
-    <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
-    <maven-javadoc-plugin.version>3.8.0</maven-javadoc-plugin.version>
-    <maven-release-plugin.version>3.1.1</maven-release-plugin.version>
+    <license-maven-plugin.version>5.0.0</license-maven-plugin.version>
+    <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
+    <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+    <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
+    <maven-failsafe-plugin.version>3.5.4</maven-failsafe-plugin.version>
+    <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
+    <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
+    <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+    <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
+    <maven-release-plugin.version>3.2.0</maven-release-plugin.version>
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
     <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
-    <maven-surefire-plugin.version>3.3.1</maven-surefire-plugin.version>
+    <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
 
     <!-- Dependency versions -->
-    <commons-dbcp.version>2.12.0</commons-dbcp.version>
-    <ojdbc.version>23.5.0.24.07</ojdbc.version>
-    <springframework.version>6.1.12</springframework.version>
-    <junit.version>5.11.0</junit.version>
+    <commons-dbcp.version>2.13.0</commons-dbcp.version>
+    <ojdbc.version>23.26.0.0.0</ojdbc.version>
+    <springframework.version>7.0.1</springframework.version>
+    <junit.version>6.0.1</junit.version>
     <hamcrest.version>2.0.0.0</hamcrest.version>
-    <log4j.version>2.23.1</log4j.version>
-    <mockito.version>5.12.0</mockito.version>
-    <hikaricp.version>5.1.0</hikaricp.version>
-    <tomcat-jdbc.version>10.1.28</tomcat-jdbc.version>
+    <log4j.version>2.25.2</log4j.version>
+    <mockito.version>5.20.0</mockito.version>
+    <hikaricp.version>7.0.2</hikaricp.version>
+    <tomcat-jdbc.version>11.0.14</tomcat-jdbc.version>
 
     <!-- Build properties -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -128,7 +128,7 @@
   <dependencies>
     <dependency>
       <groupId>com.oracle.database.jdbc</groupId>
-      <artifactId>ojdbc11</artifactId>
+      <artifactId>ojdbc17</artifactId>
       <scope>provided</scope>
     </dependency>
 
@@ -195,7 +195,7 @@
     </dependency>
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
+      <artifactId>log4j-slf4j2-impl</artifactId>
       <scope>test</scope>
       <exclusions>
         <exclusion>
@@ -278,7 +278,7 @@
           <configuration>
             <show>protected</show>
             <links>
-              <link>https://docs.spring.io/spring-framework/docs/6.1.x/javadoc-api/</link>
+              <link>https://docs.spring.io/spring-framework/docs/7.0.x/javadoc-api/</link>
               <link>https://docs.oracle.com/en/database/oracle/oracle-database/23/jajdb/</link>
             </links>
           </configuration>
