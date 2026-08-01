@@ -50,30 +50,30 @@
 
   <properties>
     <!-- Plugin versions -->
-    <license-maven-plugin.version>5.0.0</license-maven-plugin.version>
+    <license-maven-plugin.version>5.1.1</license-maven-plugin.version>
     <maven-clean-plugin.version>3.5.0</maven-clean-plugin.version>
-    <maven-compiler-plugin.version>3.14.1</maven-compiler-plugin.version>
+    <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
     <maven-deploy-plugin.version>3.1.4</maven-deploy-plugin.version>
-    <maven-failsafe-plugin.version>3.5.4</maven-failsafe-plugin.version>
+    <maven-failsafe-plugin.version>3.5.6</maven-failsafe-plugin.version>
     <maven-gpg-plugin.version>3.2.8</maven-gpg-plugin.version>
     <maven-install-plugin.version>3.1.4</maven-install-plugin.version>
-    <maven-jar-plugin.version>3.5.0</maven-jar-plugin.version>
+    <maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
     <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
-    <maven-release-plugin.version>3.2.0</maven-release-plugin.version>
-    <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
-    <maven-source-plugin.version>3.3.1</maven-source-plugin.version>
-    <maven-surefire-plugin.version>3.5.4</maven-surefire-plugin.version>
+    <maven-release-plugin.version>3.3.1</maven-release-plugin.version>
+    <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
+    <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+    <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
 
     <!-- Dependency versions -->
-    <commons-dbcp.version>2.13.0</commons-dbcp.version>
-    <ojdbc.version>23.26.0.0.0</ojdbc.version>
-    <springframework.version>7.0.1</springframework.version>
-    <junit.version>6.0.1</junit.version>
+    <commons-dbcp.version>2.14.0</commons-dbcp.version>
+    <ojdbc.version>23.26.3.0.0</ojdbc.version>
+    <springframework.version>7.0.8</springframework.version>
+    <junit.version>6.1.2</junit.version>
     <hamcrest.version>2.0.0.0</hamcrest.version>
-    <log4j.version>2.25.2</log4j.version>
-    <mockito.version>5.20.0</mockito.version>
-    <hikaricp.version>7.0.2</hikaricp.version>
-    <tomcat-jdbc.version>11.0.14</tomcat-jdbc.version>
+    <log4j.version>2.26.1</log4j.version>
+    <mockito.version>5.23.0</mockito.version>
+    <hikaricp.version>7.1.0</hikaricp.version>
+    <tomcat-jdbc.version>11.0.24</tomcat-jdbc.version>
 
     <!-- Build properties -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
