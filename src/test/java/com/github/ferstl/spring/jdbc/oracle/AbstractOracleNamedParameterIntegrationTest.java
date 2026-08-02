@@ -15,8 +15,7 @@
  */
 package com.github.ferstl.spring.jdbc.oracle;
 
-import static com.github.ferstl.spring.jdbc.oracle.RowCountMatcher.matchesRowCounts;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static com.github.ferstl.spring.jdbc.oracle.RowCounts.rowCounts;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -61,14 +60,14 @@ public abstract class AbstractOracleNamedParameterIntegrationTest extends Abstra
   public void deleteWithArgMap() {
     int[] result = this.onpJdbcTemplate.batchUpdate(DELETE_SQL, createArgMaps(this.nrOfDeletes));
 
-    assertThat(result, matchesRowCounts(this.nrOfDeletes));
+    assertArrayEquals(rowCounts(this.nrOfDeletes), result, "row counts");
   }
 
   @Test
   public void deleteWithParamSource() {
     int[] result = this.onpJdbcTemplate.batchUpdate(DELETE_SQL, createParamSources(this.nrOfDeletes));
 
-    assertThat(result, matchesRowCounts(this.nrOfDeletes));
+    assertArrayEquals(rowCounts(this.nrOfDeletes), result, "row counts");
   }
 
   @Test

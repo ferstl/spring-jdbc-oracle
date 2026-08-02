@@ -70,7 +70,6 @@
     <ojdbc.version>23.26.3.0.0</ojdbc.version>
     <springframework.version>7.0.8</springframework.version>
     <junit.version>6.1.2</junit.version>
-    <hamcrest.version>2.0.0.0</hamcrest.version>
     <log4j.version>2.26.1</log4j.version>
     <mockito.version>5.23.0</mockito.version>
     <hikaricp.version>7.1.0</hikaricp.version>
@@ -103,12 +102,6 @@
         <version>${junit.version}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.hamcrest</groupId>
-        <artifactId>java-hamcrest</artifactId>
-        <version>${hamcrest.version}</version>
-        <scope>test</scope>
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
@@ -159,10 +152,6 @@
       <artifactId>mockito-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>java-hamcrest</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
       <scope>test</scope>
@@ -177,6 +166,7 @@
      <groupId>com.zaxxer</groupId>
      <artifactId>HikariCP</artifactId>
      <version>${hikaricp.version}</version>
+     <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.tomcat</groupId>

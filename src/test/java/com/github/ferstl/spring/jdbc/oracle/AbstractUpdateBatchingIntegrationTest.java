@@ -15,9 +15,9 @@
  */
 package com.github.ferstl.spring.jdbc.oracle;
 
-import static com.github.ferstl.spring.jdbc.oracle.RowCountMatcher.matchesRowCounts;
-import static com.github.ferstl.spring.jdbc.oracle.RowCountPerBatchMatcher.matchesBatchedRowCounts;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static com.github.ferstl.spring.jdbc.oracle.RowCounts.batchedRowCounts;
+import static com.github.ferstl.spring.jdbc.oracle.RowCounts.rowCounts;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public abstract class AbstractUpdateBatchingIntegrationTest extends AbstractOrac
     int nrOfUpdates = 2 * this.batchSize;
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, createBatchArgs(nrOfUpdates));
 
-    assertThat(result, matchesRowCounts(nrOfUpdates));
+    assertArrayEquals(rowCounts(nrOfUpdates), result, "row counts");
     this.verifyUpdates(nrOfUpdates);
   }
 
@@ -57,7 +57,7 @@ public abstract class AbstractUpdateBatchingIntegrationTest extends AbstractOrac
     int nrOfUpdates = this.batchSize + 2;
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, createBatchArgs(nrOfUpdates));
 
-    assertThat(result, matchesRowCounts(nrOfUpdates));
+    assertArrayEquals(rowCounts(nrOfUpdates), result, "row counts");
     this.verifyUpdates(nrOfUpdates);
   }
 
@@ -101,7 +101,7 @@ public abstract class AbstractUpdateBatchingIntegrationTest extends AbstractOrac
 
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new TestBatchPreparedStatementSetter(nrOfUpdates));
 
-    assertThat(result, matchesRowCounts(nrOfUpdates));
+    assertArrayEquals(rowCounts(nrOfUpdates), result, "row counts");
     this.verifyUpdates(nrOfUpdates);
   }
 
@@ -111,7 +111,7 @@ public abstract class AbstractUpdateBatchingIntegrationTest extends AbstractOrac
 
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new TestBatchPreparedStatementSetter(nrOfUpdates));
 
-    assertThat(result, matchesRowCounts(nrOfUpdates));
+    assertArrayEquals(rowCounts(nrOfUpdates), result, "row counts");
     this.verifyUpdates(nrOfUpdates);
   }
 
@@ -129,7 +129,7 @@ public abstract class AbstractUpdateBatchingIntegrationTest extends AbstractOrac
 
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new TestInterruptiblePreparedStatementSetter(nrOfUpdates));
 
-    assertThat(result, matchesRowCounts(nrOfUpdates));
+    assertArrayEquals(rowCounts(nrOfUpdates), result, "row counts");
     this.verifyUpdates(nrOfUpdates);
   }
 
@@ -139,7 +139,7 @@ public abstract class AbstractUpdateBatchingIntegrationTest extends AbstractOrac
 
     int[] result = this.jdbcTemplate.batchUpdate(SINGLE_ROW_SQL, new TestInterruptiblePreparedStatementSetter(nrOfUpdates));
 
-    assertThat(result, matchesRowCounts(nrOfUpdates));
+    assertArrayEquals(rowCounts(nrOfUpdates), result, "row counts");
     this.verifyUpdates(nrOfUpdates);
   }
 
@@ -158,7 +158,7 @@ public abstract class AbstractUpdateBatchingIntegrationTest extends AbstractOrac
     int[][] result = this.jdbcTemplate.batchUpdate(
         SINGLE_ROW_SQL, createIntBatchArgs(nrOfUpdates), customBatchSize, new TestParameterizedPreparedStatementSetter());
 
-    assertThat(result, matchesBatchedRowCounts(customBatchSize, nrOfUpdates));
+    assertArrayEquals(batchedRowCounts(customBatchSize, nrOfUpdates), result, "batched row counts");
     this.verifyUpdates(nrOfUpdates);
   }
 
@@ -169,7 +169,7 @@ public abstract class AbstractUpdateBatchingIntegrationTest extends AbstractOrac
     int[][] result = this.jdbcTemplate.batchUpdate(
         SINGLE_ROW_SQL, createIntBatchArgs(nrOfUpdates), customBatchSize, new TestParameterizedPreparedStatementSetter());
 
-    assertThat(result, matchesBatchedRowCounts(customBatchSize, nrOfUpdates));
+    assertArrayEquals(batchedRowCounts(customBatchSize, nrOfUpdates), result, "batched row counts");
     this.verifyUpdates(nrOfUpdates);
   }
 
@@ -180,7 +180,7 @@ public abstract class AbstractUpdateBatchingIntegrationTest extends AbstractOrac
     int[][] result = this.jdbcTemplate.batchUpdate(
         SINGLE_ROW_SQL, Collections.emptyList(), customBatchSize, new TestParameterizedPreparedStatementSetter());
 
-    assertThat(result, matchesBatchedRowCounts(customBatchSize, 0));
+    assertArrayEquals(batchedRowCounts(customBatchSize, 0), result, "batched row counts");
     this.verifyUpdates(0);
   }
 
