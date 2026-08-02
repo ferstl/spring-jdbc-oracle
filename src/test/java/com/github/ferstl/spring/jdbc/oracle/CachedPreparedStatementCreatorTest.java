@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -57,7 +56,7 @@ public class CachedPreparedStatementCreatorTest {
 
     PreparedStatementCreator creator = new CachedPreparedStatementCreator(key, sql);
     List<Integer> result = this.jdbcOperations.query(creator, (rs, i) -> rs.getInt(1));
-    assertEquals(Collections.singletonList(1), result);
+    assertEquals(List.of(1), result);
     assertEquals(sql, ((SqlProvider) creator).getSql());
 
     verify(this.connection).getStatementWithKey(key);
@@ -84,7 +83,7 @@ public class CachedPreparedStatementCreatorTest {
 
     PreparedStatementCreator creator = new CachedPreparedStatementCreator(key, sql);
     List<Integer> result = this.jdbcOperations.query(creator, (rs, i) -> rs.getInt(1));
-    assertEquals(Collections.singletonList(1), result);
+    assertEquals(List.of(1), result);
     assertEquals(sql, ((SqlProvider) creator).getSql());
 
     verify(this.connection).getStatementWithKey(key);

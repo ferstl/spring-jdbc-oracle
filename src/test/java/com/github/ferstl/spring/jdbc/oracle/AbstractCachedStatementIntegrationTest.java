@@ -17,7 +17,6 @@ package com.github.ferstl.spring.jdbc.oracle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -38,10 +37,10 @@ public abstract class AbstractCachedStatementIntegrationTest extends AbstractOra
     RowMapper<Integer> rowMapper = (rs, i) -> rs.getInt(1);
 
     List<Integer> result = this.jdbcTemplate.query(statementCreator, rowMapper);
-    assertEquals(Collections.singletonList(1), result);
+    assertEquals(List.of(1), result);
 
     result = this.jdbcTemplate.query(statementCreator, rowMapper);
-    assertEquals(Collections.singletonList(1), result);
+    assertEquals(List.of(1), result);
   }
 
 }

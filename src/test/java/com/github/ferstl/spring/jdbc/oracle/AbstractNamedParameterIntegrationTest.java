@@ -18,7 +18,6 @@ package com.github.ferstl.spring.jdbc.oracle;
 import static com.github.ferstl.spring.jdbc.oracle.RowCounts.rowCounts;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -64,7 +63,7 @@ public abstract class AbstractNamedParameterIntegrationTest extends AbstractOrac
     Map<String, Object>[] args = new Map[nrOfRows];
 
     for (int i = 0; i < nrOfRows; i++) {
-      args[i] = Collections.singletonMap("value", i + 1);
+      args[i] = Map.of("value", i + 1);
     }
 
     return args;
