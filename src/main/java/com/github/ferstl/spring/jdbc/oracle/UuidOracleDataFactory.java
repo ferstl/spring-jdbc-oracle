@@ -29,10 +29,9 @@ public final class UuidOracleDataFactory implements OracleDataFactory {
     if (jdbcValue == null) {
       return new UuidOracleData(null);
     }
-    if (!(jdbcValue instanceof byte[])) {
+    if (!(jdbcValue instanceof byte[] raw)) {
       throw new SQLException("unexpected data type: " + jdbcValue.getClass());
     }
-    byte[] raw = (byte[]) jdbcValue;
     UUID uuid;
     try {
       uuid = UuidUtils.fromByteArray(raw);

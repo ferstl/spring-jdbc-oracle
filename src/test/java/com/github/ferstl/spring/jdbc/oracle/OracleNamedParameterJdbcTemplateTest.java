@@ -15,6 +15,7 @@
  */
 package com.github.ferstl.spring.jdbc.oracle;
 
+import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -24,9 +25,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -55,9 +55,9 @@ public class OracleNamedParameterJdbcTemplateTest {
 
   @Test
   public void endingNoSpace() throws SQLException {
-    Map<String, Object> map = new HashMap<>(4);
-    map.put("ten", 10);
-    map.put("twenty", 20);
+    Map<String, Object> map = Map.ofEntries(
+            entry("ten", 10),
+            entry("twenty", 20));
     String sql = "SELECT 1 FROM dual WHERE 1 = :ten or 20 = :twenty";
     PreparedStatementCreator preparedStatementCreator = this.namedJdbcTemplate.getPreparedStatementCreator(
             sql, new MapSqlParameterSource(map));
@@ -77,7 +77,7 @@ public class OracleNamedParameterJdbcTemplateTest {
 
   @Test
   public void setNullNoType() throws SQLException {
-    Map<String, Object> map = new HashMap<>(2);
+    Map<String, Object> map = new HashMap<>();
     map.put("ten", 10);
     map.put("twenty", null);
     String sql = "SELECT 1 FROM dual WHERE 1 = :ten or 20 = :twenty";
@@ -99,7 +99,7 @@ public class OracleNamedParameterJdbcTemplateTest {
 
   @Test
   public void setWithType() throws SQLException {
-    MapSqlParameterSource source = new MapSqlParameterSource(new HashMap<String, Object>(2));
+    MapSqlParameterSource source = new MapSqlParameterSource(new HashMap<>(2));
     source.addValue("ten", 10, Types.NUMERIC);
     source.addValue("twenty", null, Types.VARCHAR);
     String sql = "SELECT 1 FROM dual WHERE 1 = :ten or 20 = :twenty";
@@ -121,9 +121,9 @@ public class OracleNamedParameterJdbcTemplateTest {
 
   @Test
   public void endingWithSpace() throws SQLException {
-    Map<String, Object> map = new HashMap<>(4);
-    map.put("ten", 10);
-    map.put("twenty", 20);
+    Map<String, Object> map = Map.ofEntries(
+            entry("ten", 10),
+            entry("twenty", 20));
     String sql = "SELECT 1 FROM dual WHERE 10 = :ten or 20 = :twenty ";
     PreparedStatementCreator preparedStatementCreator = this.namedJdbcTemplate.getPreparedStatementCreator(
             sql, new MapSqlParameterSource(map));
@@ -143,8 +143,7 @@ public class OracleNamedParameterJdbcTemplateTest {
 
   @Test
   public void repetition() throws SQLException {
-    Map<String, Object> map = new HashMap<>(3);
-    map.put("ten", 10);
+    Map<String, Object> map = Map.of("ten", 10);
     String sql = "SELECT 1 FROM dual WHERE 10 = :ten or 0 < :ten ";
     PreparedStatementCreator preparedStatementCreator = this.namedJdbcTemplate.getPreparedStatementCreator(
             sql, new MapSqlParameterSource(map));
@@ -163,9 +162,9 @@ public class OracleNamedParameterJdbcTemplateTest {
 
   @Test
   public void commonPrefix() throws SQLException {
-    Map<String, Object> map = new HashMap<>(3);
-    map.put("arg", 10);
-    map.put("arg2", 20);
+    Map<String, Object> map = Map.ofEntries(
+            entry("arg", 10),
+            entry("arg2", 20));
     String sql = "SELECT 1 FROM dual WHERE 10 = :arg or 20 = :arg2";
     PreparedStatementCreator preparedStatementCreator = this.namedJdbcTemplate.getPreparedStatementCreator(
             sql, new MapSqlParameterSource(map));
@@ -185,10 +184,10 @@ public class OracleNamedParameterJdbcTemplateTest {
 
   @Test
   public void collectionUnsupported() throws SQLException {
-    Map<String, Object> map = new HashMap<>(3);
-    map.put("ten", 10);
-    map.put("twenty", 20);
-    map.put("collection", Arrays.asList(1, 23, 42));
+    Map<String, Object> map = Map.ofEntries(
+            entry("ten", 10),
+            entry("twenty", 20),
+            entry("collection", List.of(1, 23, 42)));
     String sql = "SELECT 1 FROM dual WHERE 10 = :ten or 42 in (:collection) or 20 = :twenty";
     PreparedStatementCreator preparedStatementCreator = this.namedJdbcTemplate.getPreparedStatementCreator(
             sql,
@@ -206,7 +205,7 @@ public class OracleNamedParameterJdbcTemplateTest {
   
   @Test
   public void sqlValueUnsupported() throws SQLException {
-    Map<String, Object> map = Collections.singletonMap("collection", mock(SqlValue.class));
+    Map<String, Object> map = Map.of("collection", mock(SqlValue.class));
     String sql = "SELECT 1 FROM dual WHERE 10 = ANY(:collection)";
     PreparedStatementCreator preparedStatementCreator = this.namedJdbcTemplate.getPreparedStatementCreator(
             sql,
@@ -224,7 +223,7 @@ public class OracleNamedParameterJdbcTemplateTest {
   
   @Test
   public void sqlTypeValueUnsupported() throws SQLException {
-    Map<String, Object> map = Collections.singletonMap("collection", mock(SqlTypeValue.class));
+    Map<String, Object> map = Map.of("collection", mock(SqlTypeValue.class));
     String sql = "SELECT 1 FROM dual WHERE 10 = ANY(:collection)";
     PreparedStatementCreator preparedStatementCreator = this.namedJdbcTemplate.getPreparedStatementCreator(
             sql,
@@ -244,10 +243,10 @@ public class OracleNamedParameterJdbcTemplateTest {
   public void array() throws SQLException {
     NamedSqlValue namedSqlValue = mock(NamedSqlValue.class);
 
-    Map<String, Object> map = new HashMap<>(4);
-    map.put("ten", 10);
-    map.put("twenty", 20);
-    map.put("collection", namedSqlValue);
+    Map<String, Object> map = Map.ofEntries(
+            entry("ten", 10),
+            entry("twenty", 20),
+            entry("collection", namedSqlValue));
     String sql = "SELECT 1 FROM dual WHERE 10 = :ten or 42 = ANY(:collection) or 20 = :twenty";
     PreparedStatementCreator preparedStatementCreator = this.namedJdbcTemplate.getPreparedStatementCreator(
             sql,

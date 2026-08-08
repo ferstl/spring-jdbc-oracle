@@ -15,14 +15,11 @@
  */
 package com.github.ferstl.spring.jdbc.oracle;
 
-import static com.github.ferstl.spring.jdbc.oracle.RowCountMatcher.matchesRowCounts;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static com.github.ferstl.spring.jdbc.oracle.RowCounts.rowCounts;
+import static java.util.Map.entry;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -61,50 +58,50 @@ public abstract class AbstractOracleNamedParameterIntegrationTest extends Abstra
   public void deleteWithArgMap() {
     int[] result = this.onpJdbcTemplate.batchUpdate(DELETE_SQL, createArgMaps(this.nrOfDeletes));
 
-    assertThat(result, matchesRowCounts(this.nrOfDeletes));
+    assertArrayEquals(rowCounts(this.nrOfDeletes), result, "row counts");
   }
 
   @Test
   public void deleteWithParamSource() {
     int[] result = this.onpJdbcTemplate.batchUpdate(DELETE_SQL, createParamSources(this.nrOfDeletes));
 
-    assertThat(result, matchesRowCounts(this.nrOfDeletes));
+    assertArrayEquals(rowCounts(this.nrOfDeletes), result, "row counts");
   }
 
   @Test
   public void inlistsAny() {
-    Map<String, Object> parameters = Collections.singletonMap("ids", new SqlOracleArrayValue("TEST_ARRAY_TYPE", 1, 2, 3));
+    Map<String, Object> parameters = Map.of("ids", new SqlOracleArrayValue("TEST_ARRAY_TYPE", 1, 2, 3));
     List<String> values = this.onpJdbcTemplate.query("SELECT val "
             + "FROM test_table "
             + "WHERE id = ANY(SELECT column_value FROM table(:ids))",
         new MapSqlParameterSource(parameters),
         (rs, i) -> rs.getString(1));
 
-    assertEquals(Arrays.asList("Value_00002", "Value_00003", "Value_00004"), values);
+    assertEquals(List.of("Value_00002", "Value_00003", "Value_00004"), values);
   }
 
   @Test
   public void inlistsIn() {
-    Map<String, Object> parameters = Collections.singletonMap("ids", new SqlOracleArrayValue("TEST_ARRAY_TYPE", 1, 2, 3));
+    Map<String, Object> parameters = Map.of("ids", new SqlOracleArrayValue("TEST_ARRAY_TYPE", 1, 2, 3));
     List<String> values = this.onpJdbcTemplate.query("SELECT val "
             + "FROM test_table "
             + "WHERE id IN(SELECT column_value FROM table(:ids))",
             new MapSqlParameterSource(parameters),
             (rs, i) -> rs.getString(1));
     
-    assertEquals(Arrays.asList("Value_00002", "Value_00003", "Value_00004"), values);
+    assertEquals(List.of("Value_00002", "Value_00003", "Value_00004"), values);
   }
 
   @Test
   public void batchUpdate() {
 
-    Map<String, Object> map1 = new HashMap<>(2);
-    map1.put("low", 1);
-    map1.put("high", 10);
+    Map<String, Object> map1 = Map.ofEntries(
+            entry("low", 1),
+            entry("high", 10));
 
-    Map<String, Object> map2 = new HashMap<>(2);
-    map2.put("low", 101);
-    map2.put("high", 120);
+    Map<String, Object> map2 = Map.ofEntries(
+            entry("low", 101),
+            entry("high", 120));
 
     int[] updateCount = this.onpJdbcTemplate.batchUpdate("UPDATE test_table "
             + "SET numval = - numval "
@@ -116,7 +113,7 @@ public abstract class AbstractOracleNamedParameterIntegrationTest extends Abstra
 
   @Test
   public void queryForStream() {
-    Map<String, Object> map = Collections.singletonMap("end", 10);
+    Map<String, Object> map = Map.of("end", 10);
 
     int[] array;
     try (Stream<Integer> stream = this.onpJdbcTemplate.queryForStream("SELECT LEVEL "
@@ -132,7 +129,7 @@ public abstract class AbstractOracleNamedParameterIntegrationTest extends Abstra
   @Test
   public void uuid() {
     UUID expected = UUID.randomUUID();
-    Map<String, Object> map = Collections.singletonMap("uuid", new UuidOracleData(expected));
+    Map<String, Object> map = Map.of("uuid", new UuidOracleData(expected));
     UUID actual = this.onpJdbcTemplate.queryForObject("SELECT :uuid AS uuid_row"
             + " FROM dual",
             new MapSqlParameterSource(map),
@@ -149,7 +146,7 @@ public abstract class AbstractOracleNamedParameterIntegrationTest extends Abstra
     Map<String, Object>[] args = new Map[nrOfRows];
 
     for (int i = 0; i < nrOfRows; i++) {
-      args[i] = Collections.singletonMap("value", i + 1);
+      args[i] = Map.of("value", i + 1);
     }
 
     return args;

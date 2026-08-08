@@ -15,10 +15,9 @@
  */
 package com.github.ferstl.spring.jdbc.oracle;
 
-import static com.github.ferstl.spring.jdbc.oracle.RowCountMatcher.matchesRowCounts;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static com.github.ferstl.spring.jdbc.oracle.RowCounts.rowCounts;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
-import java.util.Collections;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -49,14 +48,14 @@ public abstract class AbstractNamedParameterIntegrationTest extends AbstractOrac
   public void deleteWithArgMap() {
     int[] result = this.npJdbcTemplate.batchUpdate(DELETE_SQL, createArgMaps(this.nrOfDeletes));
 
-    assertThat(result, matchesRowCounts(this.nrOfDeletes));
+    assertArrayEquals(rowCounts(this.nrOfDeletes), result, "row counts");
   }
 
   @Test
   public void deleteWithParamSource() {
     int[] result = this.npJdbcTemplate.batchUpdate(DELETE_SQL, createParamSources(this.nrOfDeletes));
 
-    assertThat(result, matchesRowCounts(this.nrOfDeletes));
+    assertArrayEquals(rowCounts(this.nrOfDeletes), result, "row counts");
   }
 
   private static Map<String, Object>[] createArgMaps(int nrOfRows) {
@@ -64,7 +63,7 @@ public abstract class AbstractNamedParameterIntegrationTest extends AbstractOrac
     Map<String, Object>[] args = new Map[nrOfRows];
 
     for (int i = 0; i < nrOfRows; i++) {
-      args[i] = Collections.singletonMap("value", i + 1);
+      args[i] = Map.of("value", i + 1);
     }
 
     return args;
